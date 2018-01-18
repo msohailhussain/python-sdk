@@ -1,0 +1,26 @@
+</br >
+<div class="row">
+    <div class="col-xs-12">
+      <div class="box">
+        <!-- /.box-header -->
+        <div class="box-body">
+        <div class="form-group row">
+          <div class="col-sm-2">
+            <select id="select_visitor" class="form-control selectpicker" >
+				{{#if visitors}}
+					{{#each visitors}}
+						 <option value="{{this.name}}" data-tokens="ketchup mustard">{{this.name}}</option>
+					{{/each}}
+				{{/if}}
+			</select>
+          </div>
+          <button onclick="selectVisitor();" class="btn btn-lg btn-primary">save</button>
+        </div>
+        </div>
+        <!-- /.box-body -->
+      </div>
+      <!-- /.box -->
+    </div>
+    <!-- /.col -->
+  </div>
+  <!-- /.row -->

@@ -1,0 +1,30 @@
+<!-- ////  ==========  Configuration Tab Content  ============ ///////// -->
+<div class="col-md-12">
+    <div class="col col-lg-4">
+        <form class="new_config" id="new_config" accept-charset="UTF-8" method="post">
+            <div class="form-group">
+                <label>Project ID</label>
+                <input class="form-control" type="text" name="project_id" id="project_id" value={{project_id}}>
+            </div>
+            <div class="form-group">
+                <label>Experiment Key</label>
+                <input class="form-control" type="text" name="experiment_key" id="experiment_key" value={{experiment_key}}>
+            </div>
+            <div class="form-group">
+                <label>Event Key</label>
+                <input class="form-control" type="text" name="event_key" id="event_key" value={{event_key}}>
+            </div>
+            <div class="form-group">
+                <input onclick="sumitConfig();" name="commit" value="Save" class="btn btn-primary" data-disable-with="Create Config">
+            </div>
+        </div>
+        {{#if datafile_json}}
+        <div class="col col-lg-8">
+            <div class="form-group">
+                <label for="config_project_configuration_json">Project configuration json</label>
+                <textarea readonly="readonly" rows="20" class="form-control" name="datafile_json" id="datafile_json">{{datafile_json}}</textarea>
+            </div>
+        </div>
+        {{/if}}
+    </form>
+</div>
