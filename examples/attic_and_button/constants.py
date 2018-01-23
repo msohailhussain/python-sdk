@@ -20,7 +20,7 @@ class Constants(object):
     # Sorting Experiment
     SORTING_EXP_KEY = 'sorting_experiment'
     SORTING_EXP_VAR_BY_PRICE = 'sort_by_price'
-    SORTING_EXP_VAR__BY_NAME = 'sort_by_name'
+    SORTING_EXP_VAR_BY_NAME = 'sort_by_name'
     ADD_TO_CART_EVENT_KEY = 'add_to_cart'
 
     # Discount Feature

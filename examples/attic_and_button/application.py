@@ -14,7 +14,7 @@
 import os
 import uuid
 
-from flask import Flask, redirect, url_for, session, send_from_directory
+from flask import Flask, redirect, url_for, session, send_from_directory, request
 
 from application_controller import ApplicationController
 from constants import Constants
@@ -27,18 +27,18 @@ appController = ApplicationController(app.logger)
 
 @app.before_request
 def configure_guest_user():
-    if not session['userId']:
+    if ('userId' not in session) or (not session['userId']):
         session['userId'] = str(uuid.uuid4())
         session['isGuestUser'] = True
         session['cart'] = {}
-        session['isActivatedForSortingExperiment'] = False
+        session['isActivated'] = False
 
 # API routes
 
 
 @app.route("/")
 def index():
-    redirect(url_for('shop'))
+    return redirect(url_for('shop'))
 
 
 @app.route('/login', methods=['POST'])
@@ -46,7 +46,7 @@ def login():
     return appController.handle_login()
 
 
-@app.route("/logout")
+@app.route("/logout", methods=['POST'])
 def logout():
     return appController.handle_logout()
 

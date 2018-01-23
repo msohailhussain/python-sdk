@@ -44,12 +44,12 @@ class ApplicationController(object):
     def handle_login(self):
         # Return false if falsy user_id given
         if not Helpers.parseFormValue(request.form['userId']):
-            this.__logger.debug('Empty user_id supplied.')
+            self.__logger.debug('Empty user_id supplied.')
             return json.dumps(False)
 
         # Return false if another user already logged in
-        if session['isGuestUser'] == False:
-            this.__logger.debug(
+        if session['isGuestUser'] is False:
+            self.__logger.debug(
                 'Another user already logged in. Please logout first.')
             return json.dumps(False)
 
@@ -62,8 +62,8 @@ class ApplicationController(object):
 
     def handle_logout(self):
         # Return false if no user is logged in
-        if session['isGuestUser'] == True:
-            this.__logger.debug('No user logged in to log out.')
+        if session['isGuestUser'] is True:
+            self.__logger.debug('No user logged in to log out.')
             return json.dumps(False)
 
         session['userId'] = None
@@ -77,7 +77,7 @@ class ApplicationController(object):
         # Only activate if the user hasn't been activated.
         # For each user session, the user is activated for Sorting Experiment
         # only once
-        if session['isActivatedForSortingExperiment'] == True:
+        if session['isActivatedForSortingExperiment'] is True:
             variation_key = self.__client_manager.get_obj().activate(
                 Constants.SORTING_EXP_KEY, session['userId'])
         else:
@@ -100,20 +100,21 @@ class ApplicationController(object):
 
         elif request.method == 'DELETE':
             self.__client_manager.clearAllLogs()
-            return None
+            return json.dumps(None)
 
     def handle_cart_product(self):
         num_of_products = 1
 
         product_id = request.form['productId']
         if 'num' in request.form:
-            num_of_products = request.form['num']
+            num_of_products = int(request.form['num'])
 
         if request.method == 'POST':
-            if not product_id in session['cart']:
-                session['cart'][product_id] = num_of_products
-            else:
-                session['cart'][product_id] += num_of_products
+            if product_id not in session['cart']:
+                session['cart'][product_id] = 0
+
+            prev_num = int(session['cart'][product_id])
+            session['cart'][product_id] = prev_num + num_of_products
 
             # Call AddtoCart event
             self.__client_manager.get_obj().track(
@@ -123,10 +124,13 @@ class ApplicationController(object):
 
         if request.method == 'DELETE':
             if product_id in session['cart']:
-                session['cart'][product_id] -= num_of_products
+                prev_num = int(session['cart'][product_id])
+                session['cart'][product_id] = prev_num - num_of_products
 
-            if session['cart'][product_id] < 0:
+            if int(session['cart'][product_id]) < 0:
                 session['cart'][product_id] = 0
+
+            return json.dumps(True)
 
     def handle_checkout(self):
         variation = self.__client_manager.get_obj().activate(
@@ -145,7 +149,7 @@ class ApplicationController(object):
 
         session['cart'] = {}
 
-        return None
+        return json.dumps(None)
 
     def handle_cart(self):
         if request.method == 'DELETE':
@@ -159,7 +163,7 @@ class ApplicationController(object):
             # fetch discount_percentage
             discount_percentage = None
             domain = session['userId']
-            if session['isGuestUser'] == False:
+            if session['isGuestUser'] is False:
                 id, domain = session[userId].split('@')
 
             if self.__client_manager.get_obj().is_feature_enabled(
@@ -172,7 +176,7 @@ class ApplicationController(object):
             # Only check for logged in users
             buynow_enabled = False
 
-            if session['isGuestUser'] == False:
+            if session['isGuestUser'] is False:
                 buynow_enabled = self.__client_manager.get_obj().is_feature_enabled(
                     Constants.BUY_NOW_FEATURE_KEY, session['userId'], {'domain': domain})
 
