@@ -12,6 +12,6 @@ name = "pypi"
 [packages]
 
 optimizely-sdk = "*"
-flask = "*"
+Flask = "*"
 "pep8" = "*"
 requests = "*"

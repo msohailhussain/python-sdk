@@ -21,7 +21,7 @@ class Constants(object):
     SORTING_EXP_KEY = 'sorting_experiment'
     SORTING_EXP_VAR_BY_PRICE = 'sort_by_price'
     SORTING_EXP_VAR__BY_NAME = 'sort_by_name'
-    ADD_TO_CART_EVENT_KEY =  'add_to_cart'
+    ADD_TO_CART_EVENT_KEY = 'add_to_cart'
 
     # Discount Feature
     DISCOUNT_FEATURE_KEY = 'discount_feature'
@@ -44,4 +44,3 @@ class Constants(object):
     HOME_PAGE_URL = 'index.html'
     CDN_URL = 'https://cdn.optimizely.com/json/{0}.json'
     IMAGES_DIR_PATH_FROM_UI_DIR = "images/"
-

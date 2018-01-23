@@ -11,12 +11,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from flask import request
-from constants import Constants
+import json
+
+from flask import request, session
 from constants import Constants
 from helpers import Helpers
 from optimizely_client_manager import OptimizelyClientManager
-from payloads import Payloads
 from products import Products
 
 
@@ -33,50 +33,156 @@ class ApplicationController(object):
     # products reference
     __products_instance = None
 
-    def __init__(self):
+    # flask logger
+    __logger = None
+
+    def __init__(self, flask_logger):
         self.__client_manager = OptimizelyClientManager(Constants.PROJECT_ID)
         self.__products_instance = Products()
+        self.__logger = flask_logger
 
+    def handle_login(self):
+        # Return false if falsy user_id given
+        if not Helpers.parseFormValue(request.form['userId']):
+            this.__logger.debug('Empty user_id supplied.')
+            return json.dumps(False)
 
-    def handleProducts(self):
-        return Payloads.getProducts(self.__products_instance.getAll())
+        # Return false if another user already logged in
+        if session['isGuestUser'] == False:
+            this.__logger.debug(
+                'Another user already logged in. Please logout first.')
+            return json.dumps(False)
 
-    def handleVisitor(self, request):
-        user_id = Helpers.parseFormValue(request.form['user_id'])
+        session['userId'] = request.form['userId']
+        session['isGuestUser'] = False
+        session['cart'] = {}
+        session['isActivatedForSortingExperiment'] = False
 
-        if not (isinstance(self.__client_manager, OptimizelyClientManager) and self.__client_manager.get_obj()):
-            return Payloads.getVisitor(Payloads.CODES["OPT_INSTANCE_NOT_FOUND"])
+        return json.dumps(True)
 
-        if not self.__experiment_key:
-            return Payloads.getVisitor(Payloads.CODES["EMPTY_EXPERIMENT_KEY"])
+    def handle_logout(self):
+        # Return false if no user is logged in
+        if session['isGuestUser'] == True:
+            this.__logger.debug('No user logged in to log out.')
+            return json.dumps(False)
 
-        if not user_id:
-            return Payloads.getVisitor(Payloads.CODES["EMPTY_VISITOR_ID"])
+        session['userId'] = None
+        session['isGuestUser'] = None
+        session['cart'] = {}
+        session['isActivatedForSortingExperiment'] = None
 
-        variation_key = self.__client_manager.get_obj(
-        ).activate(self.__experiment_key, user_id)
-        products = self.__products_instance.getAllSorted(variation_key)
+        return json.dumps(True)
 
-        return Payloads.getVisitor(Payloads.CODES["SUCCESS"], variation_key, products)
+    def handle_shop(self):
+        # Only activate if the user hasn't been activated.
+        # For each user session, the user is activated for Sorting Experiment
+        # only once
+        if session['isActivatedForSortingExperiment'] == True:
+            variation_key = self.__client_manager.get_obj().activate(
+                Constants.SORTING_EXP_KEY, session['userId'])
+        else:
+            variation_key = self.__client_manager.get_obj().get_variation(
+                Constants.SORTING_EXP_KEY, session['userId'])
 
-    def handleBuy(self, request):
-        user_id = Helpers.parseFormValue(request.form['user_id'])
-        product_id = Helpers.parseFormValue(request.form['product_id'])
+        if variation_key is None:
+            self.__logger.debug(
+                'No variation key returned from Optimizely. Products will be returned in default ordering.')
 
-        if not (isinstance(self.__client_manager, OptimizelyClientManager) and self.__client_manager.get_obj()):
-            return Payloads.getBuy(Payloads.CODES["OPT_INSTANCE_NOT_FOUND"])
+        return json.dumps(self.__products_instance.getAllSorted(variation_key))
 
-        self.__client_manager.get_obj().track(self.__event_key, user_id)
-        return Payloads.getBuy(Payloads.CODES["SUCCESS"])
+    def handle_products(self):
+        return json.dumps(self.__products_instance.getAll())
 
-    def handleLogs(self, request):
-        if not (isinstance(self.__client_manager, OptimizelyClientManager) and self.__client_manager.get_obj()):
-            return Payloads.getLogs(Payloads.CODES["OPT_INSTANCE_NOT_FOUND"])
-
+    def handle_messages(self):
         if request.method == 'GET':
             logs = self.__client_manager.getAllLogs()
-            return Payloads.getLogs(Payloads.CODES["SUCCESS"], logs)
+            return json.dumps(logs)
 
-        elif request.method == 'POST':
+        elif request.method == 'DELETE':
             self.__client_manager.clearAllLogs()
-            return Payloads.getLogs(Payloads.CODES["SUCCESS"])
+            return None
+
+    def handle_cart_product(self):
+        num_of_products = 1
+
+        product_id = request.form['productId']
+        if 'num' in request.form:
+            num_of_products = request.form['num']
+
+        if request.method == 'POST':
+            if not product_id in session['cart']:
+                session['cart'][product_id] = num_of_products
+            else:
+                session['cart'][product_id] += num_of_products
+
+            # Call AddtoCart event
+            self.__client_manager.get_obj().track(
+                Constants.ADD_TO_CART_EVENT_KEY, session['userId'])
+
+            return json.dumps(True)
+
+        if request.method == 'DELETE':
+            if product_id in session['cart']:
+                session['cart'][product_id] -= num_of_products
+
+            if session['cart'][product_id] < 0:
+                session['cart'][product_id] = 0
+
+    def handle_checkout(self):
+        variation = self.__client_manager.get_obj().activate(
+            Constants.CHECKOUT_EXP_KEY, session['userId'])
+
+        if variation == Constants.CHECKOUT_EXP_VAR_ONE_STEP:
+            return json.dumps({'variation': 'one_step'})
+        if variation == Constants.CHECKOUT_EXP_VAR_TWO_STEP:
+            return json.dumps({'variation': 'two_step'})
+
+    def handle_placeorder(self):
+        cart_total = request.form['cartTotal']
+
+        self.__client_manager.get_obj().track(
+            Constants.CHECKOUT_COMPLETE_EVENT_KEY, session['userId'])
+
+        session['cart'] = {}
+
+        return None
+
+    def handle_cart(self):
+        if request.method == 'DELETE':
+            session['cart'] = {}
+            return json.dumps(True)
+
+        if request.method == 'GET':
+            # fetch cart products
+            products = session['cart']
+
+            # fetch discount_percentage
+            discount_percentage = None
+            domain = session['userId']
+            if session['isGuestUser'] == False:
+                id, domain = session[userId].split('@')
+
+            if self.__client_manager.get_obj().is_feature_enabled(
+                    Constants.DISCOUNT_FEATURE_KEY, session['userId'], {'domain': domain}):
+
+                discount_percentage = self.__client_manager.get_obj().get_feature_variable_integer(
+                    Constants.DISCOUNT_FEATURE_KEY, 'discount_percentage', session['userId'], {'domain': domain})
+
+            # fetch buynow_enabled
+            # Only check for logged in users
+            buynow_enabled = False
+
+            if session['isGuestUser'] == False:
+                buynow_enabled = self.__client_manager.get_obj().is_feature_enabled(
+                    Constants.BUY_NOW_FEATURE_KEY, session['userId'], {'domain': domain})
+
+            return json.dumps({
+                              'products': products,
+                              'discount_percentage': discount_percentage,
+                              'buynow_enabled': buynow_enabled
+                              })
+
+    def handle_user(self):
+        if session['isGuestUser']:
+            return json.dumps(None)
+        return session['userId']

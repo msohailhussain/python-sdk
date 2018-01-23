@@ -11,6 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
 import os
 
 from constants import Constants
@@ -22,7 +23,7 @@ class Helpers(object):
     def parseFormValue(inp):
         """ converts 'null' to Python None
         """
-        if inp == 'null':
+        if not inp or inp == 'null':
             return None
         return inp
 

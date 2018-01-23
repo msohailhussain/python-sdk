@@ -27,6 +27,7 @@ class Products(object):
 
     def __build(self):
         reader = csv.reader(open('products.csv', 'r'))
+        self.__items = []
         for idx, line in enumerate(reader):
             self.__items.append({
                 'id': idx,
@@ -42,21 +43,13 @@ class Products(object):
     def getAllSorted(self, variation_key):
         items = self.getAll()
 
-        # sort by ID
-        if variation_key == Constants.VARIATIONS['id']:
-            return sorted(items, key=itemgetter('id'))
-
         # sort by name
-        if variation_key == Constants.VARIATIONS['name']:
+        if variation_key == Constants.SORTING_EXP_VAR_BY_NAME:
             return sorted(items, key=itemgetter('name'))
 
         # sort by price
-        if variation_key == Constants.VARIATIONS['price']:
+        if variation_key == Constants.SORTING_EXP_VAR_BY_PRICE:
             return sorted(items, key=itemgetter('price'))
-
-        # sort by category
-        if variation_key == Constants.VARIATIONS['category']:
-            return sorted(items, key=itemgetter('category'))
 
         # return products on default ordering
         return items

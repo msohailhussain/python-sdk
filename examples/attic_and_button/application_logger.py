@@ -17,15 +17,17 @@ from operator import itemgetter
 
 from optimizely.logger import BaseLogger
 
-LogMessage = namedtuple('LogMessage', 'timestamp level message')
-
 
 class ApplicationLogger(BaseLogger):
 
     __data = []
 
     def log(self, log_level, message):
-        self.__data.append(LogMessage(time.time(), log_level, message))
+        self.__data.append({
+            'timestamp': time.time(),
+            'level': log_level,
+            'message': message
+        })
 
     def clearAllLogs(self):
         self.__data = []
