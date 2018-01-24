@@ -1,0 +1,125 @@
+<div class="card-header text-center">
+Variation: two_step_checkout
+</div>
+<div class="row" style="padding-top:20px;">
+<div class="col-md-6">
+<div class="card">
+<div class="card-header bg-dark text-white">
+SHIPPING INFO
+</div>
+<div class="card-body">
+<form>
+<div class="form-row">
+<div class="form-group col-md-6">
+<label for="inputEmail4">First Name</label>
+<input class="form-control" id="inputFirstName" placeholder="First Name" type="text" value="Rashidsp204">
+</div>
+<div class="form-group col-md-6">
+<label for="inputPassword4">Last Name</label>
+<input class="form-control" id="inputLastName" placeholder="Last Name" type="text">
+</div>
+</div>
+<div class="form-group">
+<label for="inputAddress">Address</label>
+<input class="form-control" id="inputAddress1" placeholder="1234 Main St" readonly="" type="text">
+</div>
+<div class="form-group">
+<label for="inputAddress2">Address 2</label>
+<input class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor" readonly="" type="text">
+</div>
+<div class="form-row">
+<div class="form-group col-md-6">
+<label for="inputCity">City</label>
+<input class="form-control" id="inputCity" readonly="" type="text" value="Trenton">
+</div>
+<div class="form-group col-md-4">
+<label for="inputState">State</label>
+<select class="form-control" disabled="" id="inputState">
+<option selected="New Jersey">New Jersey</option>
+</select>
+</div>
+<div class="form-group col-md-2">
+<label for="inputZip">Zip</label>
+<input class="form-control" id="inputZip" readonly="" type="text" value="08608">
+</div>
+<div class="form-group row" id="nextButton" style="display: none;">
+<div class="col-md-12 text-xs-left">
+<button class="btn btn-info btn-block" id="nextStep" type="button">
+<span id="next-button-amount">Next</span>
+</button>
+</div>
+</div>
+</div>
+</form>
+</div>
+</div>
+
+</div>
+<div class="col-md-5 offset-md-1" id="CreditCardPartial"><div class="card">
+<div class="card-header bg-dark text-white">
+CREDIT CARD INFO
+<img class="img-responsive pull-right" src="http://i76.imgup.net/accepted_c22e0.png">
+</div>
+<div class="card-body">
+<fieldset>
+<div class="form-group row">
+<label class="col-md-12">Card Number</label>
+<div class="col-md-3">
+<input autocomplete="off" class="form-control" disabled="" maxlength="4" pattern="\d{4}" required="" title="First four digits" type="text" value="4242">
+</div>
+<div class="col-md-3">
+<input autocomplete="off" class="form-control" disabled="" maxlength="4" pattern="\d{4}" required="" title="Second four digits" type="text" value="4242">
+</div>
+<div class="col-md-3">
+<input autocomplete="off" class="form-control" disabled="" maxlength="4" pattern="\d{4}" required="" title="Third four digits" type="text" value="4242">
+</div>
+<div class="col-md-3">
+<input autocomplete="off" class="form-control" disabled="" maxlength="4" pattern="\d{4}" required="" title="Fourth four digits" type="text" value="4242">
+</div>
+</div>
+<div class="form-group row">
+<label class="col-md-12">Card Expiry Date</label>
+<div class="col-md-8">
+<select class="form-control" name="cc_exp_mo">
+<option value="01">January</option>
+<option value="02">February</option>
+<option value="03">March</option>
+<option value="04">April</option>
+<option value="05">May</option>
+<option value="06">June</option>
+<option value="07">July</option>
+<option value="08">August</option>
+<option value="09">September</option>
+<option value="10">October</option>
+<option value="11">November</option>
+<option value="12">December</option>
+</select>
+</div>
+<div class="col-md-4">
+<select class="form-control" name="cc_exp_yr">
+<option>2016</option>
+<option>2017</option>
+<option>2018</option>
+<option>2019</option>
+<option>2020</option>
+<option>2021</option>
+<option>2022</option>
+</select>
+</div>
+</div>
+<div class="form-group row">
+<label class="col-md-12">Card CVV</label>
+<div class="col-md-3">
+<input autocomplete="off" class="form-control" disabled="" maxlength="3" pattern="\d{3}" required="" title="Three digits at back of your card" type="text" value="123">
+</div>
+</div>
+<div class="form-group row">
+<div class="col-md-12 text-xs-left">
+<a class="btn btn-lg btn-info btn-block" id="#payment-button" rel="nofollow" data-method="post" href="/demo/rashidsp204@gmail.com/checkout_payment?total_price=227.05"><span id="payment-button-amount">Place Order ($227.05)</span>
+</a></div>
+</div>
+</fieldset>
+</div>
+</div>
+</div>
+</div>

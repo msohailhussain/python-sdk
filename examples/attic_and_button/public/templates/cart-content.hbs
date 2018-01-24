@@ -1,0 +1,67 @@
+<table class="table table-xs">
+	<tbody>
+		<tr>
+			<th></th>
+			<th>Product</th>
+			<th class="text-right">Quantity</th>
+			<th class="text-right">Price</th>
+			<th class="text-right">Total</th>
+			<th class="text-right"></th>
+		</tr>
+		{{#each products}}
+			<tr class="item-row product">
+				<td style="width: 8rem;">
+					<img class="img-thumbnail" src="{{this.image_url}}" alt="Item 4">
+				</td>
+				<td>
+				<p>
+					<strong>
+					Springtime
+					</strong>
+					</p>
+					<p>
+					<span>Color: {{this.color}},</span>
+					<span>Category: {{this.category}}</span>
+					</p>
+				</td>
+				<td class="text-right product-quantity" title="Amount">
+					<input max="100" min="1" product_id="{{this.id}}" style="width: 2.5rem;" type="number" value="{{this.qty}}">
+				</td>
+				<td class="text-right product-price totals-value" title="Price">{{this.price}}</td>
+				<td class="text-right product-line-price totals-value" title="Total">{{this.total}}</td>
+				<td class="product-removal text-right" title="delete">
+					<button class="btn btn-danger btn-sm remove-product" product_id="{{this.id}}">
+					Remove
+					</button>
+				</td>
+			</tr>
+		{{/each}}
+		<tr>
+			<td class="text-right"></td>
+			<th class="text-right" colspan="4">Subtotal</th>
+			<td class="text-right totals-value" id="cartSubtotal">{{sub_total}}</td>
+		</tr>
+		<tr>
+			<td class="text-right border-0"></td>
+			<th class="border-0 text-right" colspan="4">Discount (5%)</th>
+			<td class="border-0 text-right totals-value" id="cartDiscount">{{discount}}</td>
+		</tr>
+		<tr>
+			<td class="text-right border-0"></td>
+			<th class="border-0 text-right" colspan="4">Grand Total</th>
+			<td class="border-0 text-right totals-value" id="cartTotal">{{total}}</td>
+		</tr>
+		<tr>
+			<td class="border-0 text-left" colspan="4">
+			<a data-confirm="Are you sure? want to delete all items!" class="btn btn-lg btn-danger " rel="nofollow" data-method="delete" href="/demo/rashidsp204@gmail.com/delete_cart">Clear</a>
+			</td>
+			<td class="border-0 text-right" colspan="4">
+				{{#if next}}
+					<a class="btn btn-info btn-lg checkout" data-method="get" href="/demo/rashidsp204@gmail.com/payment?total_price=138.7">Checkout</a>
+				{{else}}
+					<a class="btn btn-info btn-lg checkout" data-remote="true" data-method="get" href="/show_receipt/rashidsp204@gmail.com/show_receipt?discount_percentage=5">Buy Now</a>
+				{{/if}}
+			</td>
+		</tr>
+	</tbody>
+</table>

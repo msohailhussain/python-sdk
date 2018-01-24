@@ -31,7 +31,7 @@ def configure_guest_user():
         session['userId'] = str(uuid.uuid4())
         session['isGuestUser'] = True
         session['cart'] = {}
-        session['isActivated'] = False
+        session['isActivatedForSortingExperiment'] = False
 
 # API routes
 
@@ -59,7 +59,6 @@ def user():
 @app.route("/shop")
 def shop():
     return appController.handle_shop()
-
 
 @app.route("/products")
 def products():

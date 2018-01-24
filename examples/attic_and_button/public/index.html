@@ -1,42 +1,57 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <meta name="csrf-param" content="authenticity_token">
+    <meta name="csrf-token" content="704BSbnsjeq64lHDna/UXBgXBz4E+XMX63MLzNu5OrAI5EK6rwCLC8iGxruFtktlBmLyRETrJdWQ0hbINWc59g==">
+    <title>Optimizely Python SDK Demo Application</title>
 
-    <title>Optimizely SDK - Demo Application</title>
-
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/site.css">
-
-    <script src="js/jquery-1.10.2.min.js"></script>
-    <script src="js/handlebars-v4.0.11.js"></script>
-    <script src="js/index.js"></script>
-
+    <link rel="stylesheet" href="css/bootstrap.min.css">    
 </head>
 
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="/">Optimizely .NET SDK</a>
+    <nav class="navbar navbar-expand-lg navbar-light navbar-dark bg-dark" style="background-color: #e3f2fd;">
+        <button aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbarTogglerDemo03" data-toggle="collapse" type="button"></button>
+        <a class="navbar-brand" href="/">Attic &amp; Button</a>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0"></ul>
+            <div class="form-inline my-2 my-lg-0">
+            <a class="navbar-brand" href="/">Guest User</a>
+            <a class="btn btn-outline-info my-2 my-sm-0" data-remote="true" href="/demo/new">Login</a>
             </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li id="home_page"><a href="/">Home</a></li>
-                    <li class="demo_page"><a href="demo.html">Demo</a></li>
+        </div>
+    </nav>
+    <div id="flash_messages">
+    </div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-9 pt-3 pb-3">
+                <ul id="demo-tabs" class="nav nav-tabs">
                 </ul>
             </div>
         </div>
+        <div id="content" class="container">
+        </div>
     </div>
-
-    <div id="content" class="container body-content">
-
-    </div>
-    
 </body>
 
-<script src="js/bootstrap.min.js"></script>
-<script src="js/respond.min.js"></script>
 
+<script src="js/jquery-1.10.2.min.js"></script>
+<script src="js/handlebars-v4.0.11.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/respond.min.js"></script>
+<script src="js/datatables.min.js"></script>
+
+<!-- This will handle the ajax request calls -->
+<script src="js/demo-controller.js"></script>
+
+<!-- This will provide functions for each template -->
+<script src="js/template-functions.js"></script>
+<!-- This will handle the ajax request calls -->
+<script src="js/ajax-requests.js"></script>
+
+<!-- This will route the demo page tabs -->
+<script src="js/template-routes.js"></script>
 </html>

@@ -1,6 +1,5 @@
 function DemoController (params) {
     this.data = params;
-    this.default = {"status": "001", "project_id": null, "event_key": null, "datafile_json": null, "experiment_key": null}
 }
 
 DemoController.prototype.getDemoConfig = function() {
@@ -16,6 +15,16 @@ DemoController.prototype.postDemoConfig = function() {
 
 DemoController.prototype.getProducts = function(){
 	var JsonResponse = getProductsRequest(); // Sends GET /products Ajax request
+	return JsonResponse;
+}
+
+DemoController.prototype.getCartData = function(){
+	var JsonResponse = getCartDataRequest(); // Sends GET /products Ajax request
+	return JsonResponse;
+}
+
+DemoController.prototype.getMessages = function(){
+	var JsonResponse = getMessagesRequest(); // Sends GET /products Ajax request
 	return JsonResponse;
 }
 

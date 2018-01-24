@@ -5,23 +5,23 @@
  // Object to hold all template functions
  
  var templateTabs = {
- 	config_tab:  {
- 		title: "Configuration", 
- 		template_url: "templates/config-tab-content.hbs",
+ 	home:  {
+ 		title: "Home", 
+ 		template_url: "templates/home-content.hbs",
  		tab: true
  	},
- 	visitor_tab: {
- 		title: "Select Simulated Visitor",
- 		template_url: "templates/select-visitor-content.hbs",
- 		tab: false
+ 	cart: {
+ 		title: "Cart",
+ 		template_url: "templates/cart-content.hbs",
+ 		tab: true
  	},
- 	shop_tab: {
- 		title: "Shop",
- 		template_url: "templates/shop-tab-content.hbs",
+ 	checkout: {
+ 		title: "Payment",
+ 		template_url: "templates/checkout-content.hbs",
  		tab: true
  	}, 
- 	messages_tab: {
- 		title: "Messages (Log and Errors)",
+ 	messages: {
+ 		title: "Messages",
  		template_url: "templates/logs-tab-content.hbs",
  		tab: true
  	}
@@ -42,10 +42,17 @@ $.each( templateTabs, function( key, value ) {
 	});
 	
 	if(value['tab']){
-		elements = elements.add("<li><a data-key="+key+" data-toggle='tab' href=#"+key+">"+value['title']+"</a></li>");
+		elements = elements.add("<li class='nav-item'><a class='nav-link' data-key="+key+" data-toggle='tab' href=#"+key+">"+value['title']+"</a></li>");
 	}
 });
 
 $("#demo-tabs").html(elements);
-$('#demo-tabs li:first').addClass('active');
+$('#demo-tabs li:first a').addClass('active');
 
+
+Handlebars.registerHelper('ifIsBuyNow', function(value, options) {
+  if(value === 'buy_now') {
+    return true
+  }
+  return false
+});
