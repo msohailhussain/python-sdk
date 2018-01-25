@@ -2,8 +2,47 @@
 * This file exposes a handlebar template function for each template
 */
 
- // Object to hold all template functions
+// function getTemplate(name, data) {
+//     return $.get(name).then(function(src) {
+//        return Handlebars.compile(src)(data);
+//     },false);
+// }
+
+Handlebars.registerHelper('ifCond', function(v1, v2, options) {
+  if(v1 === v2) {
+    return options.fn(this);
+  }
+  return options.inverse(this);
+});
+
+
+function loadTemplate(file, data, element){
+    getTemplate(
+        file, data
+    ).done(function(data){
+        element.html(data);
+    });
+};
+
+function getTemplate( name,data){
+  var d=$.Deferred();
+
+  $.get(name,function(response){
+
+    var template = Handlebars.compile(response);
+    d.resolve(template(data))
+  });
+
+  return d.promise();
+}
  
+
+var layoutTemplates = {
+	"profile": "templates/profile-content.hbs",
+	"flash-message": "templates/flash-message.hbs"
+}
+
+
  var templateTabs = {
  	home:  {
  		title: "Home", 
@@ -46,13 +85,6 @@ $.each( templateTabs, function( key, value ) {
 	}
 });
 
+
 $("#demo-tabs").html(elements);
 $('#demo-tabs li:first a').addClass('active');
-
-
-Handlebars.registerHelper('ifIsBuyNow', function(value, options) {
-  if(value === 'buy_now') {
-    return true
-  }
-  return false
-});

@@ -1,6 +1,6 @@
-{{#if variation_key}}
+{{#if variationKey}}
     <div class="card-header text-center">
-        Variation: {{variation_key}}
+        Variation: {{variationKey}}
     </div>
 {{/if}}
 <div class="row grid-group">
@@ -26,7 +26,7 @@
                                 </p>
                             </div>
                             <div class="col-xs-12 col-md-5">
-                                <button class="btn btn-info" onclick="buyNow({{this.id}});">Buy Now</button>
+                                <button class="btn btn-info" onclick="addToCart({{this.id}}, 1);">Buy Now</button>
                             </div>
                         </div>
                     </div>

@@ -8,10 +8,20 @@ DemoController.prototype.getDemoConfig = function() {
 };
 
 
-DemoController.prototype.postDemoConfig = function() {
-    var JsonResponse = ValidateResponse(setConfigRequest(this.data)); // Sends POST /config Ajax request
+DemoController.prototype.addToCart = function() {
+    var JsonResponse = addToCartRequest(this.data); // Sends POST /config Ajax request
     return JsonResponse;
 };
+
+DemoController.prototype.loginUser = function(){
+	var JsonResponse = loginUserRequest(this.data); // Sends POST /login Ajax request
+	return JsonResponse;
+}
+DemoController.prototype.logoutUser = function(){
+	var JsonResponse = logoutUserRequest(); // Sends POST /login Ajax request
+	console.log(JsonResponse);
+	return JsonResponse;
+}
 
 DemoController.prototype.getProducts = function(){
 	var JsonResponse = getProductsRequest(); // Sends GET /products Ajax request
@@ -23,8 +33,18 @@ DemoController.prototype.getCartData = function(){
 	return JsonResponse;
 }
 
+DemoController.prototype.checkoutCart = function() {
+    var JsonResponse = checkoutCartRequest(); // Sends POST /config Ajax request
+    return JsonResponse;
+};
+
 DemoController.prototype.getMessages = function(){
 	var JsonResponse = getMessagesRequest(); // Sends GET /products Ajax request
+	return JsonResponse;
+}
+
+DemoController.prototype.clearMessages = function(){
+	var JsonResponse = clearMessagesRequest(); // Sends GET /products Ajax request
 	return JsonResponse;
 }
 
@@ -33,10 +53,6 @@ DemoController.prototype.selectVisitor = function(visitor){
 	return JsonResponse;
 }
 
-// DemoController.prototype.getProducts = function(){
-// 	var JsonResponse = getProductsRequest(); // Sends GET /products Ajax request
-// 	return JsonResponse;
-// }
 
 function ValidateResponse(response){
 	if (typeof response != 'undefined'){

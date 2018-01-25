@@ -1,5 +1,5 @@
 <div class="row">
-    <a data-confirm="Are you sure? want to delete all log messages!" class="btn btn-danger " rel="nofollow" data-method="delete" href="/demo/rashidsp204@gmail.com/delete_messages">Clear Messages</a>
+    <input id="clearMessages" class="btn btn-danger" type="button" value="Clear Messages" onclick="clearMessages();"/>
 </div>
 <br/>
 <div class="row">
@@ -18,17 +18,16 @@
               {{this.timestamp}}
             </td>
             <td>
-              {{this.message}}
+              {{this.level}}
             </td>
             <td>
-              {{this.level}}
+              {{this.message}}
             </td>
           </tr>
         {{/each}}
       </tbody>
     </table>
 </div>
-
 <script>
     jQuery(function() {
       $(document).ready(function() {

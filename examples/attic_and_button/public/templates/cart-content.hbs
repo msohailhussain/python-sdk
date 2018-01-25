@@ -57,7 +57,7 @@
 			</td>
 			<td class="border-0 text-right" colspan="4">
 				{{#if next}}
-					<a class="btn btn-info btn-lg checkout" data-method="get" href="/demo/rashidsp204@gmail.com/payment?total_price=138.7">Checkout</a>
+					<input id="checkoutCart" class="btn btn-info btn-lg checkout" type="button" value="Checkout" onclick="checkout();"/>
 				{{else}}
 					<a class="btn btn-info btn-lg checkout" data-remote="true" data-method="get" href="/show_receipt/rashidsp204@gmail.com/show_receipt?discount_percentage=5">Buy Now</a>
 				{{/if}}
