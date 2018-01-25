@@ -31,7 +31,7 @@ def configure_guest_user():
         session['userId'] = str(uuid.uuid4())
         session['isGuestUser'] = True
         session['cart'] = {}
-        session['isActivated'] = False
+        session['isActivatedForSortingExperiment'] = False
 
 # API routes
 
@@ -117,4 +117,4 @@ def serve_font(filename):
 app.secret_key = '55ef285d-a1a8-430f-ab31-fde621e354a5'
 if __name__ == '__main__':
     app.debug = True
-    app.run(port=3001)
+    app.run(host='0.0.0.0', port=3001)
