@@ -88,7 +88,10 @@ class ApplicationController(object):
             self.__logger.debug(
                 'No variation key returned from Optimizely. Products will be returned in default ordering.')
 
-        return json.dumps(self.__products_instance.getAllSorted(variation_key))
+        return json.dumps({
+                            'products':  self.__products_instance.getAllSorted(variation_key),
+                            'variationKey': variation_key
+                          })
 
     def handle_products(self):
         return json.dumps(self.__products_instance.getAll())
@@ -182,8 +185,8 @@ class ApplicationController(object):
 
             return json.dumps({
                               'products': products,
-                              'discount_percentage': discount_percentage,
-                              'buynow_enabled': buynow_enabled
+                              'discountPercentage': discount_percentage,
+                              'buynowEnabled': buynow_enabled
                               })
 
     def handle_user(self):
