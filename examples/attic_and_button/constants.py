@@ -39,7 +39,7 @@ class Constants(object):
     EMAIL_DOMAIN_ATTRIBUTE_KEY = 'domain'
 
     # Others
-    DEMO_APP_DIR = 'examples/attic_and_button'
+    DEMO_APP_DIR = 'attic_and_button'
     UI_DIR = 'public'
     HOME_PAGE_URL = 'index.html'
     CDN_URL = 'https://cdn.optimizely.com/json/{0}.json'

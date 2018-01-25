@@ -20,7 +20,7 @@ from application_controller import ApplicationController
 from constants import Constants
 from helpers import Helpers
 
-app = Flask(__name__, static_folder=Constants.UI_DIR)
+app = Flask(__name__)
 
 appController = ApplicationController(app.logger)
 
@@ -34,12 +34,6 @@ def configure_guest_user():
         session['isActivatedForSortingExperiment'] = False
 
 # API routes
-
-
-@app.route("/")
-def index():
-    return redirect(url_for('shop'))
-
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -95,22 +89,9 @@ def messages():
 @app.route('/')
 @app.route('/<path:filename>')
 def serve_file(filename=Constants.HOME_PAGE_URL):
+    app.logger.debug(filename)
+    app.logger.debug(Helpers.getStaticFolderPath())
     return send_from_directory(Helpers.getStaticFolderPath(), filename)
-
-
-@app.route('/images/<path:filename>')
-def serve_image(filename):
-    return send_from_directory(os.path.join(Helpers.getStaticFolderPath(), 'images'), filename)
-
-
-@app.route('/templates/<path:filename>')
-def serve_template(filename):
-    return send_from_directory(os.path.join(Helpers.getStaticFolderPath(), 'templates'), filename)
-
-
-@app.route('/fonts/<path:filename>')
-def serve_font(filename):
-    return send_from_directory(os.path.join(Helpers.getStaticFolderPath(), 'fonts'), filename)
 
 
 app.secret_key = '55ef285d-a1a8-430f-ab31-fde621e354a5'
