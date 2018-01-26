@@ -42,11 +42,11 @@ function getProductsRequest() {
 }
 
 function getCartDataRequest() {
-    return jQuery.parseJSON($.ajax({
-        type: 'GET',
-        url: '/shop',
-        async: false
-    }).responseText);
+    // return jQuery.parseJSON($.ajax({
+    //     type: 'GET',
+    //     url: '/shop',
+    //     async: false
+    // }).responseText);
    return {"next": "checkout", "sub_total": 0, "discount":0, "total":0, "products": [{"category": "Shorts", "name": "Bo Henry", "color": "Khaki", "price": 37, "image_url": "images/item_2.png","qty": 1, "total": 62,"id": 1}, {"category": "Shirts", "name": "Long Sleeve Swing Shirt", "color": "Baby Blue", "price": 54, "image_url": "images/item_7.png","qty": 1, "total": 54, "id": 0}, {"category": "Shirts", "name": "Long Sleever Tee", "color": "Baby Blue", "price": 62, "image_url": "images/item_8.png","qty": 1,"total": 37,"id": 7}]}
 }
 
