@@ -16,7 +16,7 @@
 				<td>
 				<p>
 					<strong>
-					Springtime
+						{{this.name}}
 					</strong>
 					</p>
 					<p>
@@ -53,15 +53,18 @@
 		</tr>
 		<tr>
 			<td class="border-0 text-left" colspan="4">
-			<a data-confirm="Are you sure? want to delete all items!" class="btn btn-lg btn-danger " rel="nofollow" data-method="delete" href="/demo/rashidsp204@gmail.com/delete_cart">Clear</a>
+				<input id="clearCart" class="btn btn-lg btn-danger" type="button" value="Clear" onclick="clearCart();"/>
+				<a data-confirm="Are you sure? want to delete all items!"
 			</td>
 			<td class="border-0 text-right" colspan="4">
-				{{#if next}}
+				{{#ifCond next 'checkout'}}
 					<input id="checkoutCart" class="btn btn-info btn-lg checkout" type="button" value="Checkout" onclick="checkout();"/>
 				{{else}}
 					<a class="btn btn-info btn-lg checkout" data-remote="true" data-method="get" href="/show_receipt/rashidsp204@gmail.com/show_receipt?discount_percentage=5">Buy Now</a>
-				{{/if}}
+				{{/ifCond}}
 			</td>
 		</tr>
 	</tbody>
 </table>
+
+<script src="js/cart-table.js"></script>

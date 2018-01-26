@@ -2,12 +2,6 @@
 * This file exposes a handlebar template function for each template
 */
 
-// function getTemplate(name, data) {
-//     return $.get(name).then(function(src) {
-//        return Handlebars.compile(src)(data);
-//     },false);
-// }
-
 Handlebars.registerHelper('ifCond', function(v1, v2, options) {
   if(v1 === v2) {
     return options.fn(this);
