@@ -1183,7 +1183,7 @@ class OptimizelyTest(base.BaseTest):
       self.assertFalse(opt_obj.is_feature_enabled('', 'test_user'))
     mock_logger.assert_called_with(enums.LogLevels.ERROR, enums.Errors.NONE_FEATURE_KEY_PARAMETER)
     self.assertEqual(2, mock_logger.call_count)
-  
+
   def test_is_feature_enabled__returns_false_for_none_or_empty_user_id(self):
     """ Test that is_feature_enabled returns false if the provided user ID is empty or None. """
 
@@ -1885,7 +1885,7 @@ class OptimizelyWithLoggingTest(base.BaseTest):
       self.optimizely.get_variation('test_experiment', None, attributes={'test_attribute': 'test_value'})
 
     mock_logging.assert_called_with(enums.LogLevels.ERROR, enums.Errors.INVALID_USER_ID_ERROR)
-    self.assertEqual(2, mock_logging.call_count) 
+    self.assertEqual(2, mock_logging.call_count)
 
   def test_activate__invalid_attributes(self):
     """ Test that expected log messages are logged during activate when attributes are in invalid format. """

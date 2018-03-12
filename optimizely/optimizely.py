@@ -300,7 +300,7 @@ class Optimizely(object):
     if not user_id:
       self.logger.log(enums.LogLevels.ERROR, enums.Errors.INVALID_USER_ID_ERROR)
       return None
-    
+
     if event_tags:
       if isinstance(event_tags, numbers.Number):
         event_tags = {
