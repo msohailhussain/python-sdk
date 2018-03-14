@@ -40,7 +40,7 @@ class EventTagUtilsTest(unittest.TestCase):
     """ Test that revenue value is not returned when revenue event tag has invalid data type. """
     self.assertIsNone(event_tag_utils.get_revenue_value({'revenue': None}))
     self.assertIsNone(event_tag_utils.get_revenue_value({'revenue': 0.5}))
-    self.assertIsNone(event_tag_utils.get_revenue_value({'revenue': '65536'}))
+    self.assertIsNone(event_tag_utils.get_revenue_value({'revenue': '65536.5'}))
     self.assertIsNone(event_tag_utils.get_revenue_value({'revenue': True}))
     self.assertIsNone(event_tag_utils.get_revenue_value({'revenue': False}))
     self.assertIsNone(event_tag_utils.get_revenue_value({'revenue': [1, 2, 3]}))

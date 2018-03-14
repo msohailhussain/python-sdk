@@ -34,10 +34,18 @@ def get_revenue_value(event_tags):
   if isinstance(raw_value, bool):
     return None
 
-  if not isinstance(raw_value, numbers.Integral):
+  try:
+    float(raw_value)
+  except ValueError:
     return None
 
-  return raw_value
+  if isinstance(raw_value, str):
+    raw_value = float(raw_value)
+
+  if raw_value != int(raw_value):
+    return None
+
+  return int(raw_value)
 
 
 def get_numeric_value(event_tags, logger=None):
