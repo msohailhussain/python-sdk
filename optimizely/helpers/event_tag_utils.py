@@ -19,7 +19,7 @@ REVENUE_METRIC_TYPE = 'revenue'
 NUMERIC_METRIC_TYPE = 'value'
 
 
-def get_revenue_value(event_tags):
+def get_revenue_value(event_tags, logger):
   """
   A smart getter of the revenue value from the event tags.
 
@@ -45,32 +45,43 @@ def get_revenue_value(event_tags):
   """
 
   if event_tags is None:
+    logger.log(enums.LogLevels.DEBUG, 'Event tags is undefined.')
     return None
 
   if not isinstance(event_tags, dict):
+    logger.log(enums.LogLevels.DEBUG, 'Event tags is not a hash.')
     return None
 
   if REVENUE_METRIC_TYPE not in event_tags:
+    logger.log(enums.LogLevels.DEBUG, 'The revenue key is not defined in the event tags.')
     return None
 
   raw_value = event_tags[REVENUE_METRIC_TYPE]
 
   if isinstance(raw_value, bool):
+    logger.log(enums.LogLevels.WARNING, 'Revenue value is boolean.')
     return None
 
   if not isinstance(raw_value, (int, float, str)):
+    logger.log(enums.LogLevels.WARNING, 'Revenue value is not an integer or float, or is not a numeric string.')
     return None
 
   if isinstance(raw_value, str):
-    raw_value = float(raw_value)
+    try:
+      raw_value = float(raw_value)
+    except ValueError:
+      logger.log(enums.LogLevels.WARNING, 'Revenue value is not a numeric string.')
+      return None
 
   if raw_value != int(raw_value):
+    logger.log(enums.LogLevels.WARNING, 'Failed to parse revenue value "%s" from event tags.' % raw_value)
     return None
 
+  logger.log(enums.LogLevels.INFO, 'Parsed revenue value "%s" from event tags.' % raw_value)
   return int(raw_value)
 
 
-def get_numeric_value(event_tags, logger=None):
+def get_numeric_value(event_tags, logger):
   """
   A smart getter of the numeric value from the event tags.
 
