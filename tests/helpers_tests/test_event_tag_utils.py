@@ -1,4 +1,4 @@
-# Copyright 2017, Optimizely
+# Copyright 2017-2018, Optimizely
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -40,7 +40,7 @@ class EventTagUtilsTest(unittest.TestCase):
     """ Test that revenue value is not returned when revenue event tag has invalid data type. """
     self.assertIsNone(event_tag_utils.get_revenue_value({'revenue': None}))
     self.assertIsNone(event_tag_utils.get_revenue_value({'revenue': 0.5}))
-    self.assertIsNone(event_tag_utils.get_revenue_value({'revenue': '65536'}))
+    self.assertIsNone(event_tag_utils.get_revenue_value({'revenue': '65536.5'}))
     self.assertIsNone(event_tag_utils.get_revenue_value({'revenue': True}))
     self.assertIsNone(event_tag_utils.get_revenue_value({'revenue': False}))
     self.assertIsNone(event_tag_utils.get_revenue_value({'revenue': [1, 2, 3]}))
@@ -50,6 +50,9 @@ class EventTagUtilsTest(unittest.TestCase):
     """ Test that correct revenue value is returned. """
     self.assertEqual(0, event_tag_utils.get_revenue_value({'revenue': 0}))
     self.assertEqual(65536, event_tag_utils.get_revenue_value({'revenue': 65536}))
+    self.assertEqual(65536, event_tag_utils.get_revenue_value({'revenue': '65536'}))
+    self.assertEqual(65536, event_tag_utils.get_revenue_value({'revenue': '65536.0'}))
+    self.assertEqual(65536, event_tag_utils.get_revenue_value({'revenue': 65536.0}))
     self.assertEqual(9223372036854775807, event_tag_utils.get_revenue_value({'revenue': 9223372036854775807}))
 
   def test_get_numeric_metric__invalid_args(self):

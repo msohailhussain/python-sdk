@@ -322,7 +322,7 @@ class EventBuilderTest(base.BaseTest):
                                 event_builder.EventBuilder.HTTP_VERB,
                                 event_builder.EventBuilder.HTTP_HEADERS)
 
-  def test_create_conversion_event__with_invalid_event_tags(self):
+  def test_create_conversion_event__with_valid_string_revenue_event_tags(self):
     """ Test that create_conversion_event creates Event object
     with right params when event tags are provided. """
 
@@ -348,6 +348,7 @@ class EventBuilderTest(base.BaseTest):
             'entity_id': '111095',
             'uuid': 'a68cf1ad-0393-4e18-af87-efe8f01a7c9c',
             'key': 'test_event',
+            'revenue': 4200,
             'tags': {
               'non-revenue': 'abc',
               'revenue': '4200',

@@ -1073,7 +1073,7 @@ class OptimizelyTest(base.BaseTest):
     self._validate_event_object(mock_dispatch_event.call_args[0][0], 'https://logx.optimizely.com/v1/events',
                                 expected_params, 'POST', {'Content-Type': 'application/json'})
 
-  def test_track__with_invalid_event_tags(self):
+  def test_track__with_valid_string_revenue_event_tags(self):
     """ Test that track calls dispatch_event with right params when invalid event tags are provided. """
 
     with mock.patch('optimizely.decision_service.DecisionService.get_variation',
@@ -1106,6 +1106,7 @@ class OptimizelyTest(base.BaseTest):
             'entity_id': '111095',
             'uuid': 'a68cf1ad-0393-4e18-af87-efe8f01a7c9c',
             'key': 'test_event',
+            'revenue': 4200,
             'tags': {
               'value': True,
               'revenue': '4200'
