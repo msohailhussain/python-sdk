@@ -25,7 +25,7 @@ def get_revenue_value(event_tags, logger):
 
   Args:
     event_tags: A dictionary of event tags.
-    logger: Optional logger.
+    logger - A component which provides a log method to log messages.
 
   Returns:
     An integer revenue value is returned when the provided revenue
@@ -49,7 +49,7 @@ def get_revenue_value(event_tags, logger):
     return None
 
   if not isinstance(event_tags, dict):
-    logger.log(enums.LogLevels.DEBUG, 'Event tags is not a hash.')
+    logger.log(enums.LogLevels.DEBUG, 'Event tags is not a dict.')
     return None
 
   if REVENUE_METRIC_TYPE not in event_tags:
@@ -58,12 +58,8 @@ def get_revenue_value(event_tags, logger):
 
   raw_value = event_tags[REVENUE_METRIC_TYPE]
 
-  if isinstance(raw_value, bool):
-    logger.log(enums.LogLevels.WARNING, 'Revenue value is boolean.')
-    return None
-
-  if not isinstance(raw_value, (int, float, str)):
-    logger.log(enums.LogLevels.WARNING, 'Revenue value is not an integer or float, or is not a numeric string.')
+  if not type(raw_value) in (float, int, str):
+    logger.log(enums.LogLevels.WARNING, 'Revenue value is not an integer or float or a string.')
     return None
 
   if isinstance(raw_value, str):
@@ -77,7 +73,7 @@ def get_revenue_value(event_tags, logger):
     logger.log(enums.LogLevels.WARNING, 'Failed to parse revenue value "%s" from event tags.' % raw_value)
     return None
 
-  logger.log(enums.LogLevels.INFO, 'Parsed revenue value "%s" from event tags.' % raw_value)
+  logger.log(enums.LogLevels.INFO, 'Parsed revenue value "%s" from event tags.' % int(raw_value))
   return int(raw_value)
 
 
@@ -87,7 +83,7 @@ def get_numeric_value(event_tags, logger):
 
   Args:
       event_tags: A dictionary of event tags.
-      logger: Optional logger.
+      logger - A component which provides a log method to log messages.
 
   Returns:
       A float numeric metric value is returned when the provided numeric
