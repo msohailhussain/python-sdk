@@ -127,59 +127,17 @@ class EventTagUtilsTest(unittest.TestCase):
 
   def test_get_numeric_metric__invalid_args(self):
     """ Test that numeric value is not returned for invalid arguments. """
+    call1 = mock.call(enums.LogLevels.DEBUG, 'Event tags is undefined.')
+    call2 = mock.call(enums.LogLevels.DEBUG, 'Event tags is not a dictionary.')
+    call3 = mock.call(
+      enums.LogLevels.WARNING,
+      'The provided numeric metric value None is in an invalid format and will not be sent to results.'
+    )
+
     with mock.patch('optimizely.logger.SimpleLogger.log') as mock_logger:
         self.assertIsNone(event_tag_utils.get_numeric_value(None, logger=logger.SimpleLogger()))
-    calls = [
-        mock.call(enums.LogLevels.DEBUG, 'Event tags is undefined.'),
-        mock.call(
-            enums.LogLevels.WARNING,
-            'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        )
-    ]
-    mock_logger.assert_has_calls(calls)
+    mock_logger.assert_has_calls([call1, call3])
 
-    calls = [
-        mock.call(enums.LogLevels.DEBUG, 'Event tags is not a dictionary.'),
-        mock.call(
-            enums.LogLevels.WARNING,
-            'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'Event tags is not a dictionary.'),
-        mock.call(
-            enums.LogLevels.WARNING,
-            'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'Event tags is not a dictionary.'),
-        mock.call(
-            enums.LogLevels.WARNING,
-            'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'Event tags is not a dictionary.'),
-        mock.call(
-            enums.LogLevels.WARNING,
-            'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'Event tags is not a dictionary.'),
-        mock.call(
-            enums.LogLevels.WARNING,
-            'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'Event tags is not a dictionary.'),
-        mock.call(
-            enums.LogLevels.WARNING,
-            'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'Event tags is not a dictionary.'),
-        mock.call(
-            enums.LogLevels.WARNING,
-            'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'Event tags is not a dictionary.'),
-        mock.call(
-            enums.LogLevels.WARNING,
-            'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        )
-    ]
     with mock.patch('optimizely.logger.SimpleLogger.log') as mock_logger:
         self.assertIsNone(event_tag_utils.get_numeric_value(0.5, logger=logger.SimpleLogger()))
         self.assertIsNone(event_tag_utils.get_numeric_value(65536, logger=logger.SimpleLogger()))
@@ -189,63 +147,38 @@ class EventTagUtilsTest(unittest.TestCase):
         self.assertIsNone(event_tag_utils.get_numeric_value(True, logger=logger.SimpleLogger()))
         self.assertIsNone(event_tag_utils.get_numeric_value(False, logger=logger.SimpleLogger()))
         self.assertIsNone(event_tag_utils.get_numeric_value([], logger=logger.SimpleLogger()))
-    mock_logger.assert_has_calls(calls)
+    mock_logger.assert_has_calls(
+        [call2, call3, call2, call3, call2, call3, call2, call3, call2, call3, call2, call3, call2, call3, call2, call3]
+    )
 
   def test_get_numeric_metric__no_value_tag(self):
     """ Test that numeric value is not returned when there's no numeric event tag. """
-    calls = [
-        mock.call(enums.LogLevels.DEBUG, 'The numeric metric key is not in event tags.'),
-        mock.call(
-            enums.LogLevels.WARNING,
-            'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'The numeric metric key is not in event tags.'),
-        mock.call(
-            enums.LogLevels.WARNING,
-            'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        )
-    ]
+    call1 = mock.call(enums.LogLevels.DEBUG, 'The numeric metric key is not in event tags.')
+    call2 = mock.call(
+      enums.LogLevels.WARNING,
+      'The provided numeric metric value None is in an invalid format and will not be sent to results.'
+    )
+
     with mock.patch('optimizely.logger.SimpleLogger.log') as mock_logger:
         self.assertIsNone(event_tag_utils.get_numeric_value({}, logger=logger.SimpleLogger()))
         self.assertIsNone(event_tag_utils.get_numeric_value({'non-value': 42}, logger=logger.SimpleLogger()))
-    mock_logger.assert_has_calls(calls)
+    mock_logger.assert_has_calls([call1, call2, call1, call2])
 
   def test_get_numeric_metric__invalid_value_tag(self):
     """ Test that numeric value is not returned when value event tag has invalid data type. """
-    calls = [
-        mock.call(enums.LogLevels.DEBUG, 'Numeric metric value is not in integer, float, or string form.'),
-        mock.call(
-            enums.LogLevels.WARNING,
-            'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'Provided numeric value is a boolean, which is an invalid format.'),
-        mock.call(
-            enums.LogLevels.WARNING,
-            'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'Provided numeric value is a boolean, which is an invalid format.'),
-        mock.call(
-            enums.LogLevels.WARNING,
-            'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'Numeric metric value is not in integer, float, or string form.'),
-        mock.call(
-            enums.LogLevels.WARNING,
-            'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'Numeric metric value is not in integer, float, or string form.'),
-        mock.call(
-            enums.LogLevels.WARNING,
+    call1 = mock.call(enums.LogLevels.DEBUG, 'Numeric metric value is not in integer, float, or string form.')
+    call2 = mock.call(
+        enums.LogLevels.WARNING,
             'The provided numeric metric value None is in an invalid format and will not be sent to results.'
         )
-    ]
+    call3 = mock.call(enums.LogLevels.DEBUG, 'Provided numeric value is a boolean, which is an invalid format.')
     with mock.patch('optimizely.logger.SimpleLogger.log') as mock_logger:
         self.assertIsNone(event_tag_utils.get_numeric_value({'value': None}, logger=logger.SimpleLogger()))
         self.assertIsNone(event_tag_utils.get_numeric_value({'value': True}, logger=logger.SimpleLogger()))
         self.assertIsNone(event_tag_utils.get_numeric_value({'value': False}, logger=logger.SimpleLogger()))
         self.assertIsNone(event_tag_utils.get_numeric_value({'value': [1, 2, 3]}, logger=logger.SimpleLogger()))
         self.assertIsNone(event_tag_utils.get_numeric_value({'value': {'a', 'b', 'c'}}, logger=logger.SimpleLogger()))
-    mock_logger.assert_has_calls(calls)
+    mock_logger.assert_has_calls([call1, call2, call3, call2, call3, call2, call1, call2, call1, call2])
 
   def test_get_numeric_metric__value_tag(self):
     """ Test that the correct numeric value is returned. """
@@ -302,58 +235,18 @@ class EventTagUtilsTest(unittest.TestCase):
     mock_logger.assert_called_once_with(enums.LogLevels.INFO, 'The numeric metric value 0.0 will be sent to results.')
 
     # Invalid values
-    calls = [
-        mock.call(enums.LogLevels.DEBUG, 'Provided numeric value is a boolean, which is an invalid format.'),
-        mock.call(
-          enums.LogLevels.WARNING,
-          'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'Numeric metric value is not in integer, float, or string form.'),
-        mock.call(
-          enums.LogLevels.WARNING,
-          'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'Provided numeric value nan is in an invalid format.'),
-        mock.call(
-          enums.LogLevels.WARNING,
-          'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'Numeric metric value is not in integer, float, or string form.'),
-        mock.call(
-          enums.LogLevels.WARNING,
-          'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'Numeric metric value is not in integer, float, or string form.'),
-        mock.call(
-          enums.LogLevels.WARNING,
-          'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'Numeric metric value is not in integer, float, or string form.'),
-        mock.call(
-          enums.LogLevels.WARNING,
-          'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'Value error while casting numeric metric value to a float.'),
-        mock.call(
-          enums.LogLevels.WARNING,
-          'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'Provided numeric value inf is in an invalid format.'),
-        mock.call(
-          enums.LogLevels.WARNING,
-          'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'Provided numeric value inf is in an invalid format.'),
-        mock.call(
-          enums.LogLevels.WARNING,
-          'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        ),
-        mock.call(enums.LogLevels.DEBUG, 'Provided numeric value -inf is in an invalid format.'),
-        mock.call(
-          enums.LogLevels.WARNING,
-          'The provided numeric metric value None is in an invalid format and will not be sent to results.'
-        )
-    ]
+
+    call1 = mock.call(enums.LogLevels.DEBUG, 'Provided numeric value is a boolean, which is an invalid format.')
+    call2 = mock.call(
+      enums.LogLevels.WARNING,
+      'The provided numeric metric value None is in an invalid format and will not be sent to results.'
+    )
+    call3 = mock.call(enums.LogLevels.DEBUG, 'Numeric metric value is not in integer, float, or string form.')
+    call4 = mock.call(enums.LogLevels.DEBUG, 'Provided numeric value inf is in an invalid format.')
+    call5 = mock.call(enums.LogLevels.DEBUG, 'Value error while casting numeric metric value to a float.')
+    call6 = mock.call(enums.LogLevels.DEBUG, 'Provided numeric value nan is in an invalid format.')
+    call7 = mock.call(enums.LogLevels.DEBUG, 'Provided numeric value -inf is in an invalid format.')
+
     with mock.patch('optimizely.logger.SimpleLogger.log') as mock_logger:
         self.assertIsNone(event_tag_utils.get_numeric_value({'value': False}, logger=logger.SimpleLogger()))
         self.assertIsNone(event_tag_utils.get_numeric_value({'value': None}, logger=logger.SimpleLogger()))
@@ -388,4 +281,5 @@ class EventTagUtilsTest(unittest.TestCase):
             logger=logger.SimpleLogger()
         )
         self.assertIsNone(numeric_value_neg_inf, 'Negative infinity numeric value is {}'.format(numeric_value_neg_inf))
-    mock_logger.assert_has_calls(calls)
+    mock_logger.assert_has_calls([call1, call2, call3, call2, call6, call2, call3, call2, call3,
+        call2, call3, call2, call5, call2, call4, call2, call4, call2, call7, call2])
