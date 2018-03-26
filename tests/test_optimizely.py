@@ -1807,9 +1807,11 @@ class OptimizelyWithLoggingTest(base.BaseTest):
 
     with mock.patch('optimizely.logger.SimpleLogger.log') as mock_logging:
       self.optimizely.track('test_event', 'test_user', event_tags='4200')
+      mock_logging.assert_called_once_with(enums.LogLevels.ERROR, 'Provided event tags are in an invalid format.')
+
+    with mock.patch('optimizely.logger.SimpleLogger.log') as mock_logging:
       self.optimizely.track('test_event', 'test_user', event_tags=4200)
-    mock_logging.assert_called_with(enums.LogLevels.ERROR, 'Provided event tags are in an invalid format.')
-    self.assertEqual(2, mock_logging.call_count)
+      mock_logging.assert_called_once_with(enums.LogLevels.ERROR, 'Provided event tags are in an invalid format.')
 
   def test_track__dispatch_raises_exception(self):
     """ Test that track logs dispatch failure gracefully. """
