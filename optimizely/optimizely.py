@@ -271,7 +271,7 @@ class Optimizely(object):
       self.logger.error(enums.Errors.INVALID_INPUT_ERROR.format('experiment_key'))
       return None
 
-    if not validator.is_non_empty_string(user_id):
+    if not validator.is_string(user_id):
       self.logger.error(enums.Errors.INVALID_INPUT_ERROR.format('user_id'))
       return None
 
@@ -364,7 +364,7 @@ class Optimizely(object):
       self.logger.error(enums.Errors.INVALID_INPUT_ERROR.format('experiment_key'))
       return None
 
-    if not validator.is_non_empty_string(user_id):
+    if not validator.is_string(user_id):
       self.logger.error(enums.Errors.INVALID_INPUT_ERROR.format('user_id'))
       return None
 
@@ -406,9 +406,9 @@ class Optimizely(object):
       self.logger.error(enums.Errors.INVALID_INPUT_ERROR.format('feature_key'))
       return False
 
-    if not validator.is_non_empty_string(user_id):
+    if not validator.is_string(user_id):
       self.logger.error(enums.Errors.INVALID_INPUT_ERROR.format('user_id'))
-      return False
+      return None
 
     if not self._validate_user_inputs(attributes):
       return False
@@ -449,9 +449,9 @@ class Optimizely(object):
       self.logger.error(enums.Errors.INVALID_DATAFILE.format('get_enabled_features'))
       return enabled_features
 
-    if not validator.is_non_empty_string(user_id):
+    if not validator.is_string(user_id):
       self.logger.error(enums.Errors.INVALID_INPUT_ERROR.format('user_id'))
-      return enabled_features
+      return None
 
     if not self._validate_user_inputs(attributes):
       return enabled_features
@@ -551,6 +551,22 @@ class Optimizely(object):
       A boolean value that indicates if the set completed successfully.
     """
 
+    if not self.is_valid:
+      self.logger.error(enums.Errors.INVALID_DATAFILE.format('set_forced_variation'))
+      return False
+
+    if not validator.is_non_empty_string(experiment_key):
+      self.logger.error(enums.Errors.INVALID_INPUT_ERROR.format('experiment_key'))
+      return False
+
+    if not validator.is_string(user_id):
+      self.logger.error(enums.Errors.INVALID_INPUT_ERROR.format('user_id'))
+      return False
+
+    if not validator.is_non_empty_string(variation_key):
+      self.logger.error(enums.Errors.INVALID_INPUT_ERROR.format('variation_key'))
+      return False
+
     return self.config.set_forced_variation(experiment_key, user_id, variation_key)
 
   def get_forced_variation(self, experiment_key, user_id):
@@ -563,6 +579,18 @@ class Optimizely(object):
     Returns:
       The forced variation key. None if no forced variation key.
     """
+
+    if not self.is_valid:
+      self.logger.error(enums.Errors.INVALID_DATAFILE.format('get_forced_variation'))
+      return None
+
+    if not validator.is_non_empty_string(experiment_key):
+      self.logger.error(enums.Errors.INVALID_INPUT_ERROR.format('experiment_key'))
+      return None
+
+    if not validator.is_string(user_id):
+      self.logger.error(enums.Errors.INVALID_INPUT_ERROR.format('user_id'))
+      return None
 
     forced_variation = self.config.get_forced_variation(experiment_key, user_id)
     return forced_variation.key if forced_variation else None
