@@ -1622,7 +1622,7 @@ class OptimizelyTest(base.BaseTest):
 
   def test_get_enabled_features_invalid_user_id(self):
     with mock.patch.object(self.optimizely, 'logger') as mock_client_logging:
-      self.optimizely.get_enabled_features(1.2)
+      self.assertEqual([], self.optimizely.get_enabled_features(1.2))
 
     mock_client_logging.error.assert_called_once_with('Provided "user_id" is in an invalid format.')
 

@@ -453,7 +453,7 @@ class Optimizely(object):
 
     if not isinstance(user_id, string_types):
       self.logger.error(enums.Errors.INVALID_INPUT_ERROR.format('user_id'))
-      return None
+      return enabled_features
 
     if not self._validate_user_inputs(attributes):
       return enabled_features
