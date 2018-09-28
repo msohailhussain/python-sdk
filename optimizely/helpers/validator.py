@@ -154,21 +154,6 @@ def is_user_profile_valid(user_profile):
   return True
 
 
-def is_string(input_id_key):
-  """ Determine if provided input_id_key is a string or not.
-
-  Args:
-    input_id_key: Variable which needs to be validated.
-
-  Returns:
-    Boolean depending upon whether input is valid or not.
-  """
-  if isinstance(input_id_key, string_types):
-    return True
-
-  return False
-
-
 def is_non_empty_string(input_id_key):
   """ Determine if provided input_id_key is a non-empty string or not.
 
@@ -178,7 +163,7 @@ def is_non_empty_string(input_id_key):
   Returns:
     Boolean depending upon whether input is valid or not.
   """
-  if input_id_key and is_string(input_id_key):
+  if input_id_key and isinstance(input_id_key, string_types):
     return True
 
   return False
