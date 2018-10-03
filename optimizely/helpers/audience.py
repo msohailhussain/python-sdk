@@ -24,8 +24,8 @@ def is_match(audience, attributes):
   Return:
     Boolean representing if user satisfies audience conditions or not.
   """
-  condition_evaluator = condition_helper.ConditionEvaluator(audience.conditionList, attributes)
-  return condition_evaluator.evaluate(audience.conditionStructure)
+  condition_evaluator = condition_helper.ConditionEvaluator(attributes)
+  return condition_evaluator.evaluate(audience.conditionList)
 
 
 def is_user_in_experiment(config, experiment, attributes):
