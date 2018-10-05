@@ -1,4 +1,4 @@
-# Copyright 2016, Optimizely
+# Copyright 2016,2018, Optimizely
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -12,7 +12,6 @@
 # limitations under the License.
 
 import json
-import pdb
 
 
 class ConditionalOperatorTypes(object):
@@ -38,12 +37,12 @@ class ConditionEvaluator(object):
     """ Method to compare single audience condition against provided user data i.e. attributes.
 
     Args:
-      condition: Integer representing the index of condition_data that needs to be used for comparison.
+      condition: Dict representing audience condition name, value, type etc.
 
     Returns:
       Boolean indicating the result of comparing the condition value against the user attributes.
     """
-    # pdb.set_trace()
+
     return self.attributes.get(condition['name']) == condition['value']
 
   def and_evaluator(self, conditions):
@@ -124,21 +123,17 @@ class ConditionEvaluator(object):
 
 
 class ConditionDecoder(object):
-  """ Class which provides an object_hook method for decoding dict
-  objects into a list when given a condition_decoder. """
+  """ Class encapsulating methods to be used in audience condition decoding. """
 
   @staticmethod
   def deserialize_audience_conditions(conditions_string):
-    """ Deserializes the conditions property into its corresponding
-    components: the condition_structure and the condition_list.
+    """ Deserializes the conditions property into a list of structures and conditions.
 
     Args:
       conditions_string: String defining valid and/or conditions.
 
     Returns:
-      A tuple of (condition_structure, condition_list).
-      condition_structure: nested list of operators and placeholders for operands.
-      condition_list: list of conditions whose index correspond to the values of the placeholders.
+      list of conditions.
     """
 
     return json.loads(conditions_string)

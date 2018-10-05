@@ -16,7 +16,6 @@ import mock
 from optimizely.helpers import condition as condition_helper
 
 from tests import base
-import pdb
 
 
 class ConditionEvaluatorTests(base.BaseTest):
@@ -26,7 +25,7 @@ class ConditionEvaluatorTests(base.BaseTest):
     self.condition_list = condition_helper.ConditionDecoder.deserialize_audience_conditions(
       self.config_dict['audiences'][0]['conditions']
     )
-    # pdb.set_trace()
+
     attributes = {
       'test_attribute': 'test_value_1',
       'browser_type': 'firefox',
