@@ -20,12 +20,28 @@ class ConditionalOperatorTypes(object):
   NOT = 'not'
 
 
+class ConditionalMatchTypes(object):
+  EXACT = 'exact'
+  EXISTS = 'exists'
+  GREATER_THAN = 'gt'
+  LESS_THAN = 'lt'
+  SUBSTRING = 'substring'
+
 DEFAULT_OPERATOR_TYPES = [
   ConditionalOperatorTypes.AND,
   ConditionalOperatorTypes.OR,
   ConditionalOperatorTypes.NOT
 ]
 
+CUSTOM_ATTRIBUTE_CONDITION_TYPE = 'custom_attribute'
+
+MATCH_TYPES = [
+  ConditionalMatchTypes.EXACT,
+  ConditionalMatchTypes.EXISTS,
+  ConditionalMatchTypes.GREATER_THAN,
+  ConditionalMatchTypes.LESS_THAN,
+  ConditionalMatchTypes.SUBSTRING
+]
 
 class ConditionEvaluator(object):
   """ Class encapsulating methods to be used in audience condition evaluation. """
@@ -56,12 +72,17 @@ class ConditionEvaluator(object):
       Boolean: True if all operands evaluate to True
     """
 
+    found_none = False
+
     for condition in conditions:
       result = self.evaluate(condition)
       if result is False:
         return False
 
-    return True
+      if result is None:
+        found_none = True
+
+    return None if found_none is None else True
 
   def or_evaluator(self, conditions):
     """ Evaluates a list of conditions as if the evaluator had been applied
@@ -74,12 +95,16 @@ class ConditionEvaluator(object):
       Boolean: True if any operand evaluates to True
     """
 
+    found_none = False
     for condition in conditions:
       result = self.evaluate(condition)
       if result is True:
         return True
 
-    return False
+      if result is None:
+        found_none = True
+
+    return None if found_none is None else False
 
   def not_evaluator(self, single_condition):
     """ Evaluates a list of conditions as if the evaluator had been applied
@@ -91,15 +116,42 @@ class ConditionEvaluator(object):
     Returns:
       Boolean: True if the operand evaluates to False
     """
-    if len(single_condition) != 1:
+    if len(single_condition) > 0:
       return False
+      result = self.evaluate(single_condition[0])
 
-    return not self.evaluate(single_condition[0])
+      return None if result is None else not result
 
-  OPERATORS = {
+    return None
+
+  def exact_evaluator(self, leaf_condition):
+    condition_value = condition['value']
+    condition_type = type(condition_value)
+
+    user_provided_value = attributes[condition.name]
+    user_provided_value_type = type user_provided_value
+    
+  def exists_evaluator(self, leaf_condition):
+    return True
+  def greater_than_evaluator(self, leaf_condition):
+    return True
+  def less_than_evaluator(self, leaf_condition):
+    return True
+  def substring_evaluator(self, leaf_condition):
+    return True
+
+  DEFAULT_OPERATORS = {
     ConditionalOperatorTypes.AND: and_evaluator,
     ConditionalOperatorTypes.OR: or_evaluator,
     ConditionalOperatorTypes.NOT: not_evaluator
+  }
+
+  EVALUATORS_BY_MATCH_TYPE = {
+    ConditionalMatchTypes.EXACT: exact_evaluator,
+    ConditionalMatchTypes.EXISTS: exists_evaluator,
+    ConditionalMatchTypes.GREATER_THAN: greater_than_evaluator,
+    ConditionalMatchTypes.LESS_THAN: less_than_evaluator,
+    ConditionalMatchTypes.SUBSTRING: substring_evaluator
   }
 
   def evaluate(self, conditions):
@@ -114,12 +166,22 @@ class ConditionEvaluator(object):
     """
 
     if isinstance(conditions, list):
-      if conditions[0] in DEFAULT_OPERATOR_TYPES:
-        return self.OPERATORS[conditions[0]](self, conditions[1:])
-      else:
-        return False
 
-    return self.evaluator(conditions)
+      if conditions[0] in DEFAULT_OPERATOR_TYPES:
+        return self.DEFAULT_OPERATORS[conditions[0]](self, conditions[1:])
+      else:
+        return self.DEFAULT_OPERATORS[ConditionalOperatorTypes.OR](self, conditions)
+
+    if conditions.type and conditions.type != CUSTOM_ATTRIBUTE_CONDITION_TYPE:
+      return None
+
+    if conditions.match and conditions.match not in MATCH_TYPES:
+      return None
+
+    if not conditions.match:
+      return self.EVALUATORS_BY_MATCH_TYPE[ConditionalMatchTypes.EXACT](self, conditions)
+    else:
+      return self.EVALUATORS_BY_MATCH_TYPE[conditions.match](self, conditions)
 
 
 class ConditionDecoder(object):
