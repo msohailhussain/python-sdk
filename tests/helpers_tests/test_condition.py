@@ -114,10 +114,10 @@ class ConditionEvaluatorTests(base.BaseTest):
     with mock.patch('optimizely.helpers.condition.ConditionEvaluator.evaluate', return_value=True):
       self.assertFalse(self.condition_evaluator.not_evaluator([42]))
 
-  def test_not_evaluator__returns_false_more_than_one_condition(self):
-    """ Test that not_evaluator returns False when list has more than 1 condition. """
+  def test_not_evaluator__returns_false_none_condition(self):
+    """ Test that not_evaluator returns False when list is empty. """
 
-    self.assertFalse(self.condition_evaluator.not_evaluator([42, 43]))
+    self.assertFalse(self.condition_evaluator.not_evaluator([]))
 
   def test_evaluate__returns_true(self):
     """ Test that evaluate returns True when conditions evaluate to True. """

@@ -12,6 +12,8 @@
 # limitations under the License.
 
 import json
+import math
+from six import string_types
 
 
 class ConditionalOperatorTypes(object):
@@ -82,7 +84,7 @@ class ConditionEvaluator(object):
       if result is None:
         found_none = True
 
-    return None if found_none is None else True
+    return None if found_none == True else True
 
   def or_evaluator(self, conditions):
     """ Evaluates a list of conditions as if the evaluator had been applied
@@ -104,9 +106,9 @@ class ConditionEvaluator(object):
       if result is None:
         found_none = True
 
-    return None if found_none is None else False
+    return None if found_none == True else False
 
-  def not_evaluator(self, single_condition):
+  def not_evaluator(self, conditions):
     """ Evaluates a list of conditions as if the evaluator had been applied
     to a single entry and NOT was applied to the result.
 
@@ -116,29 +118,59 @@ class ConditionEvaluator(object):
     Returns:
       Boolean: True if the operand evaluates to False
     """
-    if len(single_condition) > 0:
+    if not len(conditions) > 0:
       return False
-      result = self.evaluate(single_condition[0])
+    result = self.evaluate(conditions[0])
 
-      return None if result is None else not result
+    return None if result == None else not result
 
-    return None
 
   def exact_evaluator(self, leaf_condition):
-    condition_value = condition['value']
-    condition_type = type(condition_value)
+    condition_value = leaf_condition['value']
+    condition_value_type = type(condition_value.encode('utf8'))
 
-    user_provided_value = attributes[condition.name]
-    user_provided_value_type = type user_provided_value
-    
+    user_provided_value = self.attributes.get(leaf_condition['name'])
+    user_provided_value_type = type(user_provided_value)
+
+    if not self.is_value_valid_for_exact_conditions(condition_value) or \
+       not self.is_value_valid_for_exact_conditions(user_provided_value) or \
+            condition_value_type != user_provided_value_type:
+      return None
+
+    return condition_value == user_provided_value
+
+
   def exists_evaluator(self, leaf_condition):
-    return True
+    if not attributes:
+        return False
+    return leaf_condition[leaf_condition['name']] is not None
+
   def greater_than_evaluator(self, leaf_condition):
-    return True
+    condition_value = leaf_condition['value']
+    user_provided_value = self.attributes.get(leaf_condition['name'])
+
+    if not math.isfinite(condition_value) or not math.isfinite(user_provided_value):
+      return None
+
+    return user_provided_value > condition_value
+
   def less_than_evaluator(self, leaf_condition):
-    return True
+    condition_value = leaf_condition['value']
+    user_provided_value = self.attributes.get(leaf_condition['name'])
+
+    if not math.isfinite(condition_value) or not math.isfinite(user_provided_value):
+      return None
+
+    return user_provided_value < condition_value
+
   def substring_evaluator(self, leaf_condition):
-    return True
+    condition_value = leaf_condition['value']
+    user_provided_value = self.attributes.get(leaf_condition['name'])
+
+    if not isinstance(condition_value, string_types) or not isinstance(user_provided_value, string_types):
+      return None
+
+    return condition_value in user_provided_value
 
   DEFAULT_OPERATORS = {
     ConditionalOperatorTypes.AND: and_evaluator,
@@ -172,16 +204,21 @@ class ConditionEvaluator(object):
       else:
         return self.DEFAULT_OPERATORS[ConditionalOperatorTypes.OR](self, conditions)
 
-    if conditions.type and conditions.type != CUSTOM_ATTRIBUTE_CONDITION_TYPE:
+    if 'type' in conditions and conditions['type'] != CUSTOM_ATTRIBUTE_CONDITION_TYPE:
       return None
 
-    if conditions.match and conditions.match not in MATCH_TYPES:
+    if 'match' in conditions and conditions['match'] not in MATCH_TYPES:
       return None
 
-    if not conditions.match:
-      return self.EVALUATORS_BY_MATCH_TYPE[ConditionalMatchTypes.EXACT](self, conditions)
+    if 'match' in conditions:
+      return self.EVALUATORS_BY_MATCH_TYPE[conditions['match']](self, conditions)
     else:
-      return self.EVALUATORS_BY_MATCH_TYPE[conditions.match](self, conditions)
+      return self.EVALUATORS_BY_MATCH_TYPE[ConditionalMatchTypes.EXACT](self, conditions)
+
+
+
+  def is_value_valid_for_exact_conditions(self, value):
+    return isinstance(value, string_types) or isinstance(value, bool) or math.isfinite(value)
 
 
 class ConditionDecoder(object):
