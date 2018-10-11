@@ -26,6 +26,13 @@ class ConditionEvaluatorTests(base.BaseTest):
       self.config_dict['audiences'][0]['conditions']
     )
 
+    self.exact_browser_condition = {'name': 'browser_type', 'match': 'exact', 'type': 'custom_attribute', 'value': 'firefox'}
+    self.exact_device_condition = {'name': 'device', 'match': 'exact', 'type': 'custom_attribute', 'value': 'iphone'}
+    self.exact_location_condition = {'name': 'location', 'match': 'exact', 'type': 'custom_attribute', 'value': 'san francisco'}
+    self.exact_string_conditions = {'match': 'exact', 'name': 'location', 'type': 'custom_attribute', 'value': 'san francisco'}
+
+    self.exists_conditions = {'match': 'exists', 'name': 'input_value', 'type': 'custom_attribute'}
+
     attributes = {
       'test_attribute': 'test_value_1',
       'browser_type': 'firefox',
@@ -129,6 +136,167 @@ class ConditionEvaluatorTests(base.BaseTest):
 
     condition_structure = {"name": "test_attribute", "type": "custom_attribute", "value": "test_value_x"}
     self.assertFalse(self.condition_evaluator.evaluate(condition_structure))
+
+  def test_evaluate__returns_none(self):
+    """ Test that evaluate returns None when conditions evaluate to False. """
+
+    # Invalid type
+    condition_structure = {'match': 'exact', 'name': 'test_attribute', 'type': 'invalid', 'value': 'test_value_1'}
+    self.assertIsNone(self.condition_evaluator.evaluate(condition_structure))
+
+    # Invalid match
+    condition_structure = {'match': 'invalid', 'name': 'test_attribute', 'type': 'custom_attribute', 'value': 'test_value_1'}
+    self.assertIsNone(self.condition_evaluator.evaluate(condition_structure))
+
+  def test_evaluation__and_evaluation__returns_none_when_operands_evaluate_to_none(self):
+    """ Test that evaluate returns None when all operands evaluate to None. """
+
+    attributes = {
+      'browser_type': 4.5,
+      'location': False
+    }
+
+    condition_evaluator = condition_helper.ConditionEvaluator(attributes)
+    self.assertIsNone(condition_evaluator.evaluate(['and', self.exact_browser_condition, self.exact_location_condition]))
+
+  def test_evaluation__and_evaluation__returns_none_when_operands_evaluate_to_true_and_none(self):
+    """ Test that evaluate returns None when operands evaluate to True and None. """
+
+    attributes = {
+      'browser_type': 'firefox',
+      'location': False
+    }
+
+    condition_evaluator = condition_helper.ConditionEvaluator(attributes)
+    self.assertIsNone(condition_evaluator.evaluate(['and', self.exact_browser_condition, self.exact_location_condition]))
+
+  def test_evaluation__and_evaluation__returns_false_when_operands_evaluate_to_false_and_none(self):
+    """ Test that evaluate returns False when operands evaluate to False and None. """
+
+    attributes = {
+      'browser_type': 'chrome',
+      'location': False
+    }
+
+    condition_evaluator = condition_helper.ConditionEvaluator(attributes)
+    self.assertFalse(condition_evaluator.evaluate(['and', self.exact_browser_condition, self.exact_location_condition]))
+
+  def test_evaluation__and_evaluation__returns_false_when_operands_evaluate_to_true_false_and_none(self):
+    """ Test that evaluate returns False when operands evaluate to True, False and None. """
+
+    attributes = {
+      'browser_type': 'chrome',
+      'device': 'android',
+      'location': False
+    }
+
+    condition_evaluator = condition_helper.ConditionEvaluator(attributes)
+    self.assertFalse(condition_evaluator.evaluate([
+      'and',
+      self.exact_browser_condition,
+      self.exact_device_condition,
+      self.exact_location_condition
+    ]))
+
+  def test_evaluation__or_evaluation__returns_none_when_operands_evaluate_to_none(self):
+    """ Test that evaluate returns None when all operands evaluate to None. """
+
+    attributes = {
+      'browser_type': 4.5,
+      'location': False
+    }
+
+    condition_evaluator = condition_helper.ConditionEvaluator(attributes)
+    self.assertIsNone(condition_evaluator.evaluate(['or', self.exact_browser_condition, self.exact_location_condition]))
+
+  def test_evaluation__or_evaluation__returns_true_when_operands_evaluate_to_true_and_none(self):
+    """ Test that evaluate returns None when operands evaluate to True and None. """
+
+    attributes = {
+      'browser_type': False,
+      'location': 'san francisco'
+    }
+
+    condition_evaluator = condition_helper.ConditionEvaluator(attributes)
+    self.assertTrue(condition_evaluator.evaluate(['or', self.exact_browser_condition, self.exact_location_condition]))
+
+  def test_evaluation__or_evaluation__returns_false_when_operands_evaluate_to_false_and_none(self):
+    """ Test that evaluate returns False when operands evaluate to False and None. """
+
+    attributes = {
+      'browser_type': 'chrome',
+      'location': False
+    }
+
+    condition_evaluator = condition_helper.ConditionEvaluator(attributes)
+    self.assertFalse(condition_evaluator.evaluate(['or', self.exact_browser_condition, self.exact_location_condition]))
+
+  def test_evaluation__or_evaluation__returns_true_when_operands_evaluate_to_true_false_and_none(self):
+    """ Test that evaluate returns True when operands evaluate to True, False and None. """
+
+    attributes = {
+      'browser_type': False,
+      'device': 'android',
+      'location': 'san francisco'
+    }
+
+    condition_evaluator = condition_helper.ConditionEvaluator(attributes)
+    self.assertTrue(condition_evaluator.evaluate([
+      'or',
+      self.exact_browser_condition,
+      self.exact_device_condition,
+      self.exact_location_condition
+    ]))
+
+  def test_evaluation__not_evaluation__returns_none_when_operands_evaluate_to_none(self):
+    """ Test that evaluate returns None when all operands evaluate to None. """
+
+    attributes = { 'browser_type': 4.5 }
+
+    condition_evaluator = condition_helper.ConditionEvaluator(attributes)
+    self.assertIsNone(condition_evaluator.evaluate(['not' , self.exact_browser_condition]))
+
+  def test_evaluation__implicit_operator__returns_none_when_unsupported_operands_provided(self):
+    """ Test that evaluater behaves like an "or" operator when the first item in the array
+      is not a recognized operator """
+
+    attributes = {
+      'browser_type': 'chrome',
+      'device': 'iphone'
+    }
+
+    condition_evaluator = condition_helper.ConditionEvaluator(attributes)
+    self.assertTrue(condition_evaluator.evaluate([self.exact_browser_condition, self.exact_device_condition]))
+
+  def test_evaluation__exists_match_type__returns_false_when_none_user_value(self):
+    """ Test that evaluater returns False when no user value provided."""
+
+    condition_evaluator = condition_helper.ConditionEvaluator({})
+    self.assertFalse(condition_evaluator.evaluate(['and', self.exists_conditions]))
+
+  def test_evaluation__exists_match_type__returns_false_when_none_user_value(self):
+    """ Test that evaluater returns False when no user is None."""
+
+    condition_evaluator = condition_helper.ConditionEvaluator({'input_value': None})
+    self.assertFalse(condition_evaluator.evaluate(['and', self.exists_conditions]))
+
+  # def test_evaluation__exists_match_type__returns_false_when_string_user_value(self):
+  #   """ Test that evaluater returns False when no user is String."""
+  #
+  #   condition_evaluator = condition_helper.ConditionEvaluator({'input_value': 'test'})
+  #   self.assertTrue(condition_evaluator.evaluate(['and', self.exists_conditions]))
+  #
+  # def test_evaluation__exists_match_type__returns_false_when_number_user_value(self):
+  #   """ Test that evaluater returns False when no user is Number."""
+  #
+  #   condition_evaluator = condition_helper.ConditionEvaluator({'input_value': 5})
+  #   self.assertFalse(condition_evaluator.evaluate(['and', self.exists_conditions]))
+  #
+  # def test_evaluation__exists_match_type__returns_false_when_boolean_user_value(self):
+  #   """ Test that evaluater returns False when no user is Number."""
+  #
+  #   condition_evaluator = condition_helper.ConditionEvaluator({'input_value': True})
+  #   self.assertFalse(condition_evaluator.evaluate(['and', self.exists_conditions]))
 
 
 class ConditionDecoderTests(base.BaseTest):

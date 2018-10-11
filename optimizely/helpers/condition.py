@@ -141,9 +141,9 @@ class ConditionEvaluator(object):
 
 
   def exists_evaluator(self, leaf_condition):
-    if not attributes:
+    if not self.attributes:
         return False
-    return leaf_condition[leaf_condition['name']] is not None
+    return leaf_condition.get(leaf_condition['name']) is not None
 
   def greater_than_evaluator(self, leaf_condition):
     condition_value = leaf_condition['value']
@@ -218,7 +218,8 @@ class ConditionEvaluator(object):
 
 
   def is_value_valid_for_exact_conditions(self, value):
-    return isinstance(value, string_types) or isinstance(value, bool) or math.isfinite(value)
+    return isinstance(value, string_types) or isinstance(value, bool)
+    return math.isfinite(value)
 
 
 class ConditionDecoder(object):
