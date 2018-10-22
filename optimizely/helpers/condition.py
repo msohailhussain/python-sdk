@@ -13,6 +13,8 @@
 
 import json
 
+from six import string_types
+
 
 CUSTOM_ATTRIBUTE_CONDITION_TYPE = 'custom_attribute'
 
@@ -44,14 +46,6 @@ MATCH_TYPES = [
   ConditionalMatchTypes.SUBSTRING
 ]
 
-EVALUATORS_BY_MATCH_TYPE = {
-    ConditionalMatchTypes.EXACT: 'exact_evaluator',
-    ConditionalMatchTypes.EXISTS: 'exists_evaluator',
-    ConditionalMatchTypes.GREATER_THAN: 'greater_than_evaluator',
-    ConditionalMatchTypes.LESS_THAN: 'less_than_evaluator',
-    ConditionalMatchTypes.SUBSTRING: 'substring_evaluator'
-}
-
 
 class ConditionEvaluator(object):
   """ Class encapsulating methods to be used in audience condition evaluation. """
@@ -59,18 +53,6 @@ class ConditionEvaluator(object):
   def __init__(self, condition_data, attributes):
     self.condition_data = condition_data
     self.attributes = attributes
-
-  def evaluator(self, condition):
-    """ Method to compare single audience condition against provided user data i.e. attributes.
-
-    Args:
-      condition: Integer representing the index of condition_data that needs to be used for comparison.
-
-    Returns:
-      Boolean indicating the result of comparing the condition value against the user attributes.
-    """
-
-    return self.attributes.get(self.condition_data[condition][0]) == self.condition_data[condition][1]
 
   def and_evaluator(self, conditions):
     """ Evaluates a list of conditions as if the evaluator had been applied
@@ -123,38 +105,15 @@ class ConditionEvaluator(object):
 
     return not self.evaluate(single_condition[0])
 
-  OPERATORS = {
-    ConditionalOperatorTypes.AND: and_evaluator,
-    ConditionalOperatorTypes.OR: or_evaluator,
-    ConditionalOperatorTypes.NOT: not_evaluator
-  }
-
-  def evaluate(self, conditions):
-    """ Top level method to evaluate audience conditions.
-    Args:
-      conditions: Nested list of and/or conditions.
-                  Ex: ['and', operand_1, ['or', operand_2, operand_3]]
-    Returns:
-      Boolean result of evaluating the conditions evaluate
-    """
-
-    if isinstance(conditions, list):
-      if conditions[0] in DEFAULT_OPERATOR_TYPES:
-        return self.OPERATORS[conditions[0]](self, conditions[1:])
-      else:
-        return False
-
-    return self.evaluator(conditions)
-
   def is_value_valid_for_exact_conditions(self, value):
     return isinstance(value, string_types) or isinstance(value, bool)
     return math.isfinite(value)
 
-  def exact_evaluator(self, leaf_condition):
-    condition_value = leaf_condition['value']
+  def exact_evaluator(self, condition):
+    condition_value = self.condition_data[condition][1]
     condition_value_type = type(condition_value.encode('utf8'))
 
-    user_provided_value = self.attributes.get(leaf_condition['name'])
+    user_provided_value = self.attributes.get(self.condition_data[condition][0])
     user_provided_value_type = type(user_provided_value)
 
     if not self.is_value_valid_for_exact_conditions(condition_value) or \
@@ -196,6 +155,47 @@ class ConditionEvaluator(object):
 
     return condition_value in user_provided_value
 
+  EVALUATORS_BY_OPERATOR_TYPE = {
+    ConditionalOperatorTypes.AND: and_evaluator,
+    ConditionalOperatorTypes.OR: or_evaluator,
+    ConditionalOperatorTypes.NOT: not_evaluator
+  }
+
+  EVALUATORS_BY_MATCH_TYPE = {
+    ConditionalMatchTypes.EXACT: exact_evaluator,
+    ConditionalMatchTypes.EXISTS: exists_evaluator,
+    ConditionalMatchTypes.GREATER_THAN: greater_than_evaluator,
+    ConditionalMatchTypes.LESS_THAN: less_than_evaluator,
+    ConditionalMatchTypes.SUBSTRING: substring_evaluator
+  }
+
+  def evaluate(self, conditions):
+    """ Top level method to evaluate audience conditions.
+    Args:
+      conditions: Nested list of and/or conditions.
+                  Ex: ['and', operand_1, ['or', operand_2, operand_3]]
+    Returns:
+      Boolean result of evaluating the conditions evaluate
+    """
+
+    if isinstance(conditions, list):
+      if conditions[0] in DEFAULT_OPERATOR_TYPES:
+        return self.EVALUATORS_BY_OPERATOR_TYPE[conditions[0]](self, conditions[1:])
+      else:
+        return self.EVALUATORS_BY_OPERATOR_TYPE[ConditionalOperatorTypes.OR](self, conditions[1:])
+
+    leaf_condition = conditions
+
+    if self.condition_data[leaf_condition][2] != CUSTOM_ATTRIBUTE_CONDITION_TYPE:
+      return null
+
+    condition_match = self.condition_data[leaf_condition][3]
+
+    if condition_match not in MATCH_TYPES:
+      return null
+
+    return self.EVALUATORS_BY_MATCH_TYPE[condition_match](self, leaf_condition)
+
 
 class ConditionDecoder(object):
   """ Class which provides an object_hook method for decoding dict
@@ -233,7 +233,12 @@ def _audience_condition_deserializer(obj_dict):
   Returns:
     List consisting of condition key and corresponding value.
   """
-  return [obj_dict.get('name'), obj_dict.get('value')]
+  return [
+    obj_dict.get('name'),
+    obj_dict.get('value'),
+    obj_dict.get('type'),
+    obj_dict.get('match', ConditionalMatchTypes.EXACT)
+  ]
 
 
 def loads(conditions_string):

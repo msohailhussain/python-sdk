@@ -32,41 +32,6 @@ class ConditionEvaluatorTests(base.BaseTest):
     }
     self.condition_evaluator = condition_helper.ConditionEvaluator(self.condition_list, attributes)
 
-  def test_evaluator__returns_true(self):
-    """ Test that evaluator correctly returns True when there is an exact match.
-    Also test that evaluator works for falsy values. """
-
-    # string attribute value
-    condition_list = [['test_attribute', '']]
-    condition_evaluator = condition_helper.ConditionEvaluator(condition_list, {'test_attribute': ''})
-    self.assertTrue(self.condition_evaluator.evaluator(0))
-
-    # boolean attribute value
-    condition_list = [['boolean_key', False]]
-    condition_evaluator = condition_helper.ConditionEvaluator(condition_list, {'boolean_key': False})
-    self.assertTrue(condition_evaluator.evaluator(0))
-
-    # integer attribute value
-    condition_list = [['integer_key', 0]]
-    condition_evaluator = condition_helper.ConditionEvaluator(condition_list, {'integer_key': 0})
-    self.assertTrue(condition_evaluator.evaluator(0))
-
-    # double attribute value
-    condition_list = [['double_key', 0.0]]
-    condition_evaluator = condition_helper.ConditionEvaluator(condition_list, {'double_key': 0.0})
-    self.assertTrue(condition_evaluator.evaluator(0))
-
-  def test_evaluator__returns_false(self):
-    """ Test that evaluator correctly returns False when there is no match. """
-
-    attributes = {
-      'browser_type': 'chrome',
-      'location': 'San Francisco'
-    }
-    self.condition_evaluator = condition_helper.ConditionEvaluator(self.condition_list, attributes)
-
-    self.assertFalse(self.condition_evaluator.evaluator(0))
-
   def test_and_evaluator__returns_true(self):
     """ Test that and_evaluator returns True when all conditions evaluate to True. """
 
@@ -140,4 +105,4 @@ class ConditionDecoderTests(base.BaseTest):
     )
 
     self.assertEqual(['and', ['or', ['or', 0]]], condition_structure)
-    self.assertEqual([['test_attribute', 'test_value_1']], condition_list)
+    self.assertEqual([['test_attribute', 'test_value_1', 'custom_attribute', 'exact']], condition_list)
