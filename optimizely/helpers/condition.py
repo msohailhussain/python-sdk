@@ -12,6 +12,7 @@
 # limitations under the License.
 
 import json
+import math
 
 from six import string_types
 
@@ -64,13 +65,16 @@ class ConditionEvaluator(object):
     Returns:
       Boolean: True if all operands evaluate to True
     """
+    saw_null_result = False
 
     for condition in conditions:
       result = self.evaluate(condition)
       if result is False:
         return False
+      if result is None:
+        saw_null_result = True
 
-    return True
+    return None if saw_null_result else True
 
   def or_evaluator(self, conditions):
     """ Evaluates a list of conditions as if the evaluator had been applied
@@ -82,13 +86,16 @@ class ConditionEvaluator(object):
     Returns:
       Boolean: True if any operand evaluates to True
     """
+    saw_null_result = False
 
     for condition in conditions:
       result = self.evaluate(condition)
       if result is True:
         return True
+      if result is None:
+        saw_null_result = True
 
-    return False
+    return None if saw_null_result else False
 
   def not_evaluator(self, single_condition):
     """ Evaluates a list of conditions as if the evaluator had been applied
@@ -101,13 +108,26 @@ class ConditionEvaluator(object):
       Boolean: True if the operand evaluates to False
     """
     if len(single_condition) != 1:
+      return None
+
+    result = self.evaluate(single_condition[0])
+    return None if result is None else not result
+
+  def is_finite(self, value):
+    if not isinstance(value, (int, float)):
       return False
 
-    return not self.evaluate(single_condition[0])
+    if math.isnan(value) or match.isinf(value):
+      return False
+
+    return True
+
 
   def is_value_valid_for_exact_conditions(self, value):
-    return isinstance(value, string_types) or isinstance(value, bool)
-    return math.isfinite(value)
+    if isinstance(value, string_types) or isinstance(value, bool) or self.is_finite(value):
+      return True
+      
+    return False
 
   def exact_evaluator(self, condition):
     condition_value = self.condition_data[condition][1]
