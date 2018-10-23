@@ -13,7 +13,6 @@
 
 from . import condition as condition_helper
 
-
 def is_match(audience, attributes):
   """ Given audience information and user attributes determine if user meets the conditions.
 
@@ -24,9 +23,17 @@ def is_match(audience, attributes):
   Return:
     Boolean representing if user satisfies audience conditions or not.
   """
-  condition_evaluator = condition_helper.ConditionEvaluator(audience.conditionList, attributes)
-  return condition_evaluator.evaluate(audience.conditionStructure)
 
+  condition_tree_evaluator = condition_helper.ConditionTreeEvaluator()
+  custom_attr_condition_evaluator = condition_helper.CustomAttributeConditionEvaluator(
+    audience.conditionList, attributes)
+  
+  is_match = condition_tree_evaluator.evaluate(
+    audience.conditionStructure, 
+    lambda index: custom_attr_condition_evaluator.evaluate(index)
+  )
+
+  return is_match or False
 
 def is_user_in_experiment(config, experiment, attributes):
   """ Determine for given experiment if user satisfies the audiences for the experiment.

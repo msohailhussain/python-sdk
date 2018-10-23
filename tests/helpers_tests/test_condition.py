@@ -18,7 +18,7 @@ from optimizely.helpers import condition as condition_helper
 from tests import base
 
 
-class ConditionEvaluatorTests(base.BaseTest):
+class ConditionTreeEvaluatorTests(base.BaseTest):
 
   def setUp(self):
     base.BaseTest.setUp(self)
@@ -30,79 +30,98 @@ class ConditionEvaluatorTests(base.BaseTest):
       'browser_type': 'firefox',
       'location': 'San Francisco'
     }
-    self.condition_evaluator = condition_helper.ConditionEvaluator(self.condition_list, attributes)
 
-  def test_and_evaluator__returns_true(self):
-    """ Test that and_evaluator returns True when all conditions evaluate to True. """
+    self.condition_tree_evaluator = condition_helper.ConditionTreeEvaluator()
 
-    conditions = range(5)
+    self.conditionA = {
+      'name': 'browser_type',
+      'value': 'safari',
+      'type': 'custom_attribute',
+    };
 
-    with mock.patch('optimizely.helpers.condition.ConditionEvaluator.evaluate', return_value=True):
-      self.assertTrue(self.condition_evaluator.and_evaluator(conditions))
+    self.conditionB = {
+      'name': 'device_model',
+      'value': 'iphone6',
+      'type': 'custom_attribute',
+    };
 
-  def test_and_evaluator__returns_false(self):
-    """ Test that and_evaluator returns False when any one condition evaluates to False. """
-
-    conditions = range(5)
-
-    with mock.patch('optimizely.helpers.condition.ConditionEvaluator.evaluate',
-                    side_effect=[True, True, False, True, True]):
-      self.assertFalse(self.condition_evaluator.and_evaluator(conditions))
-
-  def test_or_evaluator__returns_true(self):
-    """ Test that or_evaluator returns True when any one condition evaluates to True. """
-
-    conditions = range(5)
-
-    with mock.patch('optimizely.helpers.condition.ConditionEvaluator.evaluate',
-                    side_effect=[False, False, True, False, False]):
-      self.assertTrue(self.condition_evaluator.or_evaluator(conditions))
-
-  def test_or_evaluator__returns_false(self):
-    """ Test that or_evaluator returns False when all conditions evaluator to False. """
-
-    conditions = range(5)
-
-    with mock.patch('optimizely.helpers.condition.ConditionEvaluator.evaluate', return_value=False):
-      self.assertFalse(self.condition_evaluator.or_evaluator(conditions))
-
-  def test_not_evaluator__returns_true(self):
-    """ Test that not_evaluator returns True when condition evaluates to False. """
-
-    with mock.patch('optimizely.helpers.condition.ConditionEvaluator.evaluate', return_value=False):
-      self.assertTrue(self.condition_evaluator.not_evaluator([42]))
-
-  def test_not_evaluator__returns_false(self):
-    """ Test that not_evaluator returns False when condition evaluates to True. """
-
-    with mock.patch('optimizely.helpers.condition.ConditionEvaluator.evaluate', return_value=True):
-      self.assertFalse(self.condition_evaluator.not_evaluator([42]))
-
-  def test_not_evaluator__returns_false_more_than_one_condition(self):
-    """ Test that not_evaluator returns False when list has more than 1 condition. """
-
-    self.assertFalse(self.condition_evaluator.not_evaluator([42, 43]))
+    self.conditionC = {
+      'name': 'location',
+      'match': 'exact',
+      'type': 'custom_attribute',
+      'value': 'CA',
+    };
 
   def test_evaluate__returns_true(self):
-    """ Test that evaluate returns True when conditions evaluate to True. """
+    """ Test that evaluate returns True when the leaf condition evaluator returns True. """
 
-    self.assertTrue(self.condition_evaluator.evaluate(self.condition_structure))
+    self.assertTrue(self.condition_tree_evaluator.evaluate(self.conditionA, lambda a: True))
 
   def test_evaluate__returns_false(self):
-    """ Test that evaluate returns False when conditions evaluate to False. """
+    """ Test that evaluate returns False when the leaf condition evaluator returns False. """
 
-    condition_structure = ['and', ['or', ['not', 0]]]
-    self.assertFalse(self.condition_evaluator.evaluate(condition_structure))
+    self.assertFalse(self.condition_tree_evaluator.evaluate(self.conditionA, lambda a: False))
+
+#   def test_and_evaluator__returns_true(self):
+#     """ Test that and_evaluator returns True when all conditions evaluate to True. """
+
+#     conditions = range(5)
+
+#     with mock.patch('optimizely.helpers.condition.ConditionTreeEvaluator.evaluate', return_value=True):
+#       self.assertTrue(self.condition_tree_evaluator.and_evaluator(conditions, None))
+
+#   def test_and_evaluator__returns_false(self):
+#     """ Test that and_evaluator returns False when any one condition evaluates to False. """
+
+#     conditions = range(5)
+
+#     with mock.patch('optimizely.helpers.condition.ConditionTreeEvaluator.evaluate',
+#                     side_effect=[True, True, False, True, True]):
+#       self.assertFalse(self.condition_tree_evaluator.and_evaluator(conditions, None))
+
+#   def test_or_evaluator__returns_true(self):
+#     """ Test that or_evaluator returns True when any one condition evaluates to True. """
+
+#     conditions = range(5)
+
+#     with mock.patch('optimizely.helpers.condition.ConditionTreeEvaluator.evaluate',
+#                     side_effect=[False, False, True, False, False]):
+#       self.assertTrue(self.condition_tree_evaluator.or_evaluator(conditions, None))
+
+#   def test_or_evaluator__returns_false(self):
+#     """ Test that or_evaluator returns False when all conditions evaluator to False. """
+
+#     conditions = range(5)
+
+#     with mock.patch('optimizely.helpers.condition.ConditionTreeEvaluator.evaluate', return_value=False):
+#       self.assertFalse(self.condition_tree_evaluator.or_evaluator(conditions, None))
+
+#   def test_not_evaluator__returns_true(self):
+#     """ Test that not_evaluator returns True when condition evaluates to False. """
+
+#     with mock.patch('optimizely.helpers.condition.ConditionTreeEvaluator.evaluate', return_value=False):
+#       self.assertTrue(self.condition_tree_evaluator.not_evaluator([42], None))
+
+#   def test_not_evaluator__returns_false(self):
+#     """ Test that not_evaluator returns False when condition evaluates to True. """
+
+#     with mock.patch('optimizely.helpers.condition.ConditionTreeEvaluator.evaluate', return_value=True):
+#       self.assertFalse(self.condition_tree_evaluator.not_evaluator([42], None))
+
+#   def test_not_evaluator__returns_false_more_than_one_condition(self):
+#     """ Test that not_evaluator returns False when list has more than 1 condition. """
+
+#     self.assertFalse(self.condition_tree_evaluator.not_evaluator([42, 43], None))
 
 
-class ConditionDecoderTests(base.BaseTest):
+# class ConditionDecoderTests(base.BaseTest):
 
-  def test_loads(self):
-    """ Test that loads correctly sets condition structure and list. """
+#   def test_loads(self):
+#     """ Test that loads correctly sets condition structure and list. """
 
-    condition_structure, condition_list = condition_helper.loads(
-      self.config_dict['audiences'][0]['conditions']
-    )
+#     condition_structure, condition_list = condition_helper.loads(
+#       self.config_dict['audiences'][0]['conditions']
+#     )
 
-    self.assertEqual(['and', ['or', ['or', 0]]], condition_structure)
-    self.assertEqual([['test_attribute', 'test_value_1', 'custom_attribute', 'exact']], condition_list)
+#     self.assertEqual(['and', ['or', ['or', 0]]], condition_structure)
+#     self.assertEqual([['test_attribute', 'test_value_1', 'custom_attribute', 'exact']], condition_list)

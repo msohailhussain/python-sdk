@@ -19,16 +19,16 @@ from optimizely.helpers import audience
 
 class AudienceTest(base.BaseTest):
 
-  def test_is_match__audience_condition_matches(self):
-    """ Test that is_match returns True when audience conditions are met. """
+  # def test_is_match__audience_condition_matches(self):
+  #   """ Test that is_match returns True when audience conditions are met. """
 
-    user_attributes = {
-      'test_attribute': 'test_value_1',
-      'browser_type': 'firefox',
-      'location': 'San Francisco'
-    }
+  #   user_attributes = {
+  #     'test_attribute': 'test_value_1',
+  #     'browser_type': 'firefox',
+  #     'location': 'San Francisco'
+  #   }
 
-    self.assertTrue(audience.is_match(self.optimizely.config.get_audience('11154'), user_attributes))
+  #   self.assertTrue(audience.is_match(self.optimizely.config.get_audience('11154'), user_attributes))
 
   def test_is_match__audience_condition_does_not_match(self):
     """ Test that is_match returns False when audience conditions are not met. """
