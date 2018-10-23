@@ -16,8 +16,10 @@ import math
 import numbers
 
 from six import string_types
+from nose.tools import set_trace
 
 CUSTOM_ATTRIBUTE_CONDITION_TYPE = 'custom_attribute'
+
 
 class ConditionOperatorTypes(object):
   AND = 'and'
@@ -46,6 +48,7 @@ class ConditionTreeEvaluator(object):
     Returns:
       Boolean: True if all operands evaluate to True
     """
+    # set_trace()
     saw_null_result = False
 
     for condition in conditions:
@@ -142,11 +145,10 @@ class CustomAttributeConditionEvaluator(object):
 
     return True
 
-
   def is_value_valid_for_exact_conditions(self, value):
     if isinstance(value, string_types) or isinstance(value, bool) or self.is_finite(value):
       return True
-      
+
     return False
 
   def exact_evaluator(self, condition):
@@ -220,6 +222,7 @@ class CustomAttributeConditionEvaluator(object):
       return null
 
     return self.EVALUATORS_BY_MATCH_TYPE[condition_match](self, condition)
+
 
 class ConditionDecoder(object):
   """ Class which provides an object_hook method for decoding dict
