@@ -140,7 +140,7 @@ class CustomAttributeConditionEvaluator(object):
     if not isinstance(value, (numbers.Integral, float)):
       return False
 
-    if math.isnan(value) or match.isinf(value):
+    if math.isnan(value) or math.isinf(value):
       return False
 
     return True
@@ -214,12 +214,12 @@ class CustomAttributeConditionEvaluator(object):
     """
 
     if self.condition_data[condition][2] != CUSTOM_ATTRIBUTE_CONDITION_TYPE:
-      return null
+      return None
 
     condition_match = self.condition_data[condition][3]
 
     if condition_match not in self.MATCH_TYPES:
-      return null
+      return None
 
     return self.EVALUATORS_BY_MATCH_TYPE[condition_match](self, condition)
 

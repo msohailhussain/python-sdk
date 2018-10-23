@@ -272,6 +272,70 @@ class ConditionTreeEvaluatorTests(base.BaseTest):
     ))
 
 
+browserConditionSafari = ['browser_type', 'safari', 'custom_attribute', 'exact']
+booleanCondition = ['is_firefox', True, 'custom_attribute', 'exact']
+integerCondition = ['num_users', 10, 'custom_attribute', 'exact']
+doubleCondition = ['pi_value', 3.14, 'custom_attribute', 'exact']
+
+
+class CustomAttributeConditionEvaluator(base.BaseTest):
+
+  def setUp(self):
+    base.BaseTest.setUp(self)
+    self.condition_list = [browserConditionSafari, booleanCondition, integerCondition, doubleCondition]
+
+  def test_evaluate__returns_true__when_attributes_pass_audience_condition(self):
+    evaluator = condition_helper.CustomAttributeConditionEvaluator(
+      self.condition_list, {'browser_type': 'safari'}
+    )
+
+    self.assertStrictTrue(evaluator.evaluate(0))
+
+  def test_evaluate__returns_false__when_attributes_fail_audience_condition(self):
+    evaluator = condition_helper.CustomAttributeConditionEvaluator(
+      self.condition_list, {'browser_type': 'chrome'}
+    )
+
+    self.assertStrictFalse(evaluator.evaluate(0))
+
+  def test_evaluate__evaluates__different_typed_attributes(self):
+    userAttributes = {
+      'browser_type': 'safari',
+      'is_firefox': True,
+      'num_users': 10,
+      'pi_value': 3.14,
+    }
+
+    evaluator = condition_helper.CustomAttributeConditionEvaluator(
+      self.condition_list, userAttributes
+    )
+
+    self.assertStrictTrue(evaluator.evaluate(0))
+    self.assertStrictTrue(evaluator.evaluate(1))
+    self.assertStrictTrue(evaluator.evaluate(2))
+    self.assertStrictTrue(evaluator.evaluate(3))
+
+  def test_evaluate__returns_null__when_condition_has_an_invalid_type_property(self):
+
+    condition_list = [['weird_condition', 'hi', 'custom_attribute', 'weird_match']]
+
+    evaluator = condition_helper.CustomAttributeConditionEvaluator(
+      condition_list, {'weird_condition': 'hi'}
+    )
+
+    self.assertIsNone(evaluator.evaluate(0))
+
+  def test_evaluate__returns_null__when_condition_has_an_invalid_match_property(self):
+
+    condition_list = [['weird_condition', 'hi', 'weird_type', 'exact']]
+
+    evaluator = condition_helper.CustomAttributeConditionEvaluator(
+      condition_list, {'weird_condition': 'hi'}
+    )
+
+    self.assertIsNone(evaluator.evaluate(0))
+
+
 class ConditionDecoderTests(base.BaseTest):
 
   def test_loads(self):
@@ -283,3 +347,16 @@ class ConditionDecoderTests(base.BaseTest):
 
     self.assertEqual(['and', ['or', ['or', 0]]], condition_structure)
     self.assertEqual([['test_attribute', 'test_value_1', 'custom_attribute', 'exact']], condition_list)
+
+  def test_audience_condition_deserializer_defaults(self):
+
+    browserConditionSafari = {}
+
+    items = condition_helper._audience_condition_deserializer(browserConditionSafari)
+    self.assertIsNone(items[0])
+    self.assertIsNone(items[1])
+    self.assertIsNone(items[2])
+    self.assertEqual(
+      condition_helper.ConditionMatchTypes.EXACT,
+      items[3]
+    )
