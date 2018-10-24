@@ -24,7 +24,8 @@ def is_match(audience, attributes):
   Return:
     Boolean representing if user satisfies audience conditions or not.
   """
-
+  print(audience.conditionList)
+  print(audience.conditionStructure)
   condition_tree_evaluator = condition_helper.ConditionTreeEvaluator()
   custom_attr_condition_evaluator = condition_helper.CustomAttributeConditionEvaluator(
     audience.conditionList, attributes)

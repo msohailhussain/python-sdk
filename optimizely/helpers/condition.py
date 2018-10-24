@@ -153,9 +153,15 @@ class CustomAttributeConditionEvaluator(object):
 
   def exact_evaluator(self, condition):
     condition_value = self.condition_data[condition][1]
+    if isinstance(condition_value, string_types):
+      condition_value = condition_value.encode()
+
     condition_value_type = type(condition_value)
 
     user_value = self.attributes.get(self.condition_data[condition][0])
+    if isinstance(user_value, string_types):
+      user_value = user_value.encode()
+
     user_value_type = type(user_value)
 
     if not self.is_value_valid_for_exact_conditions(condition_value) or \
