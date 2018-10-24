@@ -374,12 +374,6 @@ class CustomAttributeConditionEvaluator(base.BaseTest):
 
     self.assertStrictTrue(evaluator.evaluate(0))
 
-    evaluator = condition_helper.CustomAttributeConditionEvaluator(
-      self.exists_condition_list, {'input_value': 10L}
-    )
-
-    self.assertStrictTrue(evaluator.evaluate(0))
-
   def test_exists__returns_true__when_user_provided_value_is_boolean(self):
 
     evaluator = condition_helper.CustomAttributeConditionEvaluator(

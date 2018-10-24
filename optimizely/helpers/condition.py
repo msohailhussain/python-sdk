@@ -15,7 +15,7 @@ import json
 import math
 import numbers
 
-from six import string_types
+from six import string_types, PY2
 from nose.tools import set_trace
 
 CUSTOM_ATTRIBUTE_CONDITION_TYPE = 'custom_attribute'
@@ -153,13 +153,13 @@ class CustomAttributeConditionEvaluator(object):
 
   def exact_evaluator(self, condition):
     condition_value = self.condition_data[condition][1]
-    if isinstance(condition_value, string_types):
+    if PY2 and isinstance(condition_value, unicode):
       condition_value = condition_value.encode()
 
     condition_value_type = type(condition_value)
 
     user_value = self.attributes.get(self.condition_data[condition][0])
-    if isinstance(user_value, string_types):
+    if PY2 and isinstance(user_value, unicode):
       user_value = user_value.encode()
 
     user_value_type = type(user_value)
