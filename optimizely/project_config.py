@@ -15,6 +15,7 @@ import json
 
 from .helpers import condition as condition_helper
 from .helpers import enums
+from .helpers import validator
 from . import entities
 from . import exceptions
 
@@ -498,8 +499,12 @@ class ProjectConfig(object):
       # The invalid experiment key will be logged inside this call.
       return False
 
+    if variation_key is not None and not validator.is_non_empty_string(variation_key):
+      self.logger.debug('Variation key is invalid.')
+      return False
+
     experiment_id = experiment.id
-    if not variation_key:
+    if variation_key is None:
       if user_id in self.forced_variation_map:
         experiment_to_variation_map = self.forced_variation_map.get(user_id)
         if experiment_id in experiment_to_variation_map:
