@@ -1058,7 +1058,7 @@ class ConfigTest(base.BaseTest):
     self.assertTrue(self.project_config.set_forced_variation('test_experiment', 'test_user', None))
 
     with mock.patch.object(self.project_config, 'logger') as mock_config_logging:
-      self.assertFalse(self.project_config.set_forced_variation('test_experiment', 'test_user', ''))
+      self.assertIs(self.project_config.set_forced_variation('test_experiment', 'test_user', ''), False)
     mock_config_logging.debug.assert_called_once_with('Variation key is invalid.')
 
   def test_set_forced_variation__multiple_sets(self):

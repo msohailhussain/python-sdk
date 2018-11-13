@@ -499,10 +499,6 @@ class ProjectConfig(object):
       # The invalid experiment key will be logged inside this call.
       return False
 
-    if variation_key is not None and not validator.is_non_empty_string(variation_key):
-      self.logger.debug('Variation key is invalid.')
-      return False
-
     experiment_id = experiment.id
     if variation_key is None:
       if user_id in self.forced_variation_map:
@@ -521,6 +517,10 @@ class ProjectConfig(object):
       else:
         self.logger.debug('Nothing to remove. User "%s" does not exist in the forced variation map.' % user_id)
       return True
+
+    if not validator.is_non_empty_string(variation_key):
+      self.logger.debug('Variation key is invalid.')
+      return False
 
     forced_variation = self.get_variation_from_key(experiment_key, variation_key)
     if not forced_variation:
